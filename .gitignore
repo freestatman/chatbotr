@@ -1,0 +1,51 @@
+# .gitignore for R Chatbot
+
+# R session data
+.RData
+.Rhistory
+.Rproj.user/
+
+# R environment
+.Renviron
+
+# OAuth tokens
+.httr-oauth
+
+# Shiny cache
+rsconnect/
+*_cache/
+
+# Database files
+*.db
+*.sqlite
+*.duckdb
+*.duckdb.wal
+
+# Temporary files
+*.tmp
+*.bak
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.Rproj
+
+# Log files
+*.log
+
+# User uploaded data (keep sample.csv)
+data/*
+!data/sample.csv
+!data/.gitkeep
+
+# Package files
+*.tar.gz
+*.zip
+
+# Documentation builds
+docs/_build/

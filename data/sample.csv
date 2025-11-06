@@ -1,0 +1,21 @@
+ID,Name,Age,Department,Salary,JoinDate,Performance
+1,Alice Smith,28,Engineering,75000,2020-01-15,Excellent
+2,Bob Johnson,35,Marketing,65000,2018-03-22,Good
+3,Carol Williams,42,Engineering,95000,2015-07-10,Excellent
+4,David Brown,31,Sales,58000,2019-11-05,Good
+5,Eve Davis,29,HR,52000,2021-02-18,Average
+6,Frank Miller,38,Engineering,88000,2017-05-30,Excellent
+7,Grace Wilson,33,Marketing,68000,2019-08-14,Good
+8,Henry Moore,45,Sales,72000,2016-12-01,Excellent
+9,Iris Taylor,27,Engineering,71000,2020-09-25,Good
+10,Jack Anderson,36,HR,55000,2018-04-17,Average
+11,Karen Thomas,40,Marketing,74000,2017-01-20,Excellent
+12,Leo Jackson,32,Engineering,82000,2019-06-08,Good
+13,Mary White,29,Sales,61000,2020-10-12,Good
+14,Nathan Harris,37,HR,58000,2018-07-22,Average
+15,Olivia Martin,34,Engineering,79000,2019-03-15,Excellent
+16,Paul Thompson,41,Marketing,70000,2016-11-28,Good
+17,Quinn Garcia,30,Sales,64000,2020-05-09,Good
+18,Rachel Martinez,28,Engineering,76000,2021-01-31,Excellent
+19,Sam Robinson,39,HR,59000,2017-09-14,Average
+20,Tina Clark,33,Marketing,67000,2019-02-26,Good
