@@ -1,10 +1,79 @@
 usethis::edit_r_environ()
 
 library(ellmer)
-chat <- chat_google_gemini(
-  system = "You are a helpful assistant that provides information about the R for Data Science book by Hadley Wickham and Garrett Grolemund."
+library(dplyr)
+library(stringr)
+library(purrr)
+
+ellmer::models_github()
+
+
+ellmer::models_github() %>%
+  filter(str_detect(id, "claude")) %>%
+  pull(id)
+
+# pkgload::load_all("~/workspaces/ewise_mind_api/emind/")
+# Sys.setenv(EWISE_API_KEY = Sys.getenv("EWISE_TOKEN_INT"))
+# Sys.getenv("EWISE_API_KEY")
+
+# chat <- chat_google_gemini(
+#   system = "You are a helpful assistant that provides information about the R for Data Science book by Hadley Wickham and Garrett Grolemund."
+# )
+# chat$chat("who are you")
+chat <- chat_emind(
+  system = "You are a Sage that only reply with one word"
 )
+
+chat <- chat_github(
+  model = "gpt-5-mini",
+  system = "You are a Sage that only reply within 5 words"
+)
+
+model_ids <- ellmer::models_github() %>%
+  filter(str_detect(capabilities, "tool-calling")) %>%
+  filter(str_detect(id, "openai")) %>%
+  # filter(str_detect(id, "gpt", negate = TRUE)) %>%
+  pull(id)
+model_ids
+
+out <- model_ids |>
+  map(function(model_id) {
+    chat <- chat_github(
+      model = model_id,
+      system = "You only reply within 5 words"
+    )
+    chat$chat("what's the day and date of today?")
+  })
+
+library(tibble)
+library(dplyr)
+
+out_df <- tibble(
+  id = model_ids,
+  response = purrr::map_chr(out, ~.x)
+)
+
+# View the resulting dataframe
+out_df
+#                    id                      response
+# 1      openai/gpt-4.1   Sorry, I can't access that.
+# 2 openai/gpt-4.1-mini  Sorry, I can't provide that.
+# 3 openai/gpt-4.1-nano Sorry, I can't provide today.
+# 4       openai/gpt-4o I can't provide today's date.
+# 5  openai/gpt-4o-mini             October 11, 2023.
+# 6        openai/gpt-5   Saturday, November 8, 2025.
+# 7   openai/gpt-5-chat  I can't access today's date.
+# 8   openai/gpt-5-mini    Saturday, November 8, 2025
+# 9   openai/gpt-5-nano   Saturday, November 8, 2025.
+
 chat$chat("who are you")
+chat$chat("what's the day of today?")
+chat$chat("what's the date of today?")
+chat$chat("what's the purpose of working?")
+chat$chat("what's the purpose of parenting?")
+chat$chat("what's the purpose of AI?")
+chat$chat("what's the purpose of upskilling?")
+chat
 
 
 library(ragnar)
@@ -26,6 +95,9 @@ base_url <- "https://github.com/wch/create-shiny-react-app"
 pages <- ragnar_find_links(base_url, depth = 0)
 pages <- pages |> stringr::str_subset("main")
 pages
+getwd()
+
+ragnar::embed_bedrock
 
 store_location <- "shiny.react.shadcn.duckdb"
 
