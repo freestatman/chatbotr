@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "name": "ShinyChat PoC Workspace",
+  "version": "1.0.0",
+  "description": "Workspace for organizing PoC R ShinyChat modules and experimental shadcn/react UI components.",
+  "system_prompt": "You are assisting with a PoC combining R Shiny modules and experimental shadcn/react UI for chatbot functionality.",
+  "groups": [
+    {
+      "name": "Frontend UI",
+      "description": "Contains UI components, including the experimental shadcn/react module and related documentation database.",
+      "system_prompt": "Focus on frontend UI features, including Shiny React shadcn components and their documentation database.",
+      "data": [
+        "shiny_react_shadcn_duckdb"
+      ]
+    }
+  ],
+  "data": {
+    "shiny_react_shadcn_duckdb": {
+      "type": "file",
+      "path": "shiny.react.shadcn.duckdb",
+      "description": "DuckDB file used as a vector database store for related Shiny React shadcn documentation."
+    }
+  }
+}
