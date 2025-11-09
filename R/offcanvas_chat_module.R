@@ -1,3 +1,41 @@
+#' Offcanvas Chat UI Module
+#'
+#' @description
+#' Creates an offcanvas (slide-out) panel containing a chat interface.
+#' The offcanvas can slide in from any side of the screen.
+#'
+#' @param id Namespace ID for the module
+#' @param title Title displayed in the offcanvas header (default: "Chat")
+#' @param placement Position of the offcanvas: "end" (right), "start" (left), 
+#'   "bottom", or "top" (default: "end")
+#' @param width Width in pixels for side placement (default: 420)
+#' @param open_label Text label for the button that opens the chat (default: "Chat")
+#' @param open_class CSS classes for the open button (default: "btn btn-primary")
+#' @param open_icon Optional icon name for the open button (e.g., "comments")
+#' @param chat_ui_fun Function that generates the chat UI, typically from shinychat
+#' @param chat_ui_args Named list of additional arguments passed to chat_ui_fun
+#' @param header_right Optional UI elements to display in the header's right side
+#'
+#' @return A Shiny UI tagList containing the open button and offcanvas panel
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' library(shiny)
+#' library(bslib)
+#'
+#' ui <- page_fluid(
+#'   theme = bs_theme(version = 5),
+#'   h3("My App"),
+#'   offcanvas_chat_ui(
+#'     id = "chat",
+#'     title = "Assistant",
+#'     placement = "end",
+#'     chat_ui_fun = shinychat::chat_mod_ui
+#'   )
+#' )
+#' }
 offcanvas_chat_ui <- function(
   id,
   title = "Chat",
@@ -83,6 +121,33 @@ offcanvas_chat_ui <- function(
   shiny::tagList(open_btn, offcanvas_div)
 }
 
+#' Offcanvas Chat Server Module
+#'
+#' @description
+#' Server logic for the offcanvas chat module. This function wraps
+#' another chat server module (like shinychat's server) within the
+#' offcanvas namespace.
+#'
+#' @param id Namespace ID matching the UI module
+#' @param chat_server_fun Server function for the chat module, typically from shinychat
+#' @param ... Additional arguments passed to chat_server_fun (e.g., client, system_prompt)
+#'
+#' @return Returns the result of the chat server function
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' server <- function(input, output, session) {
+#'   github <- ellmer::chat_github()
+#'   
+#'   offcanvas_chat_server(
+#'     id = "chat",
+#'     chat_server_fun = shinychat::chat_mod_server,
+#'     client = github
+#'   )
+#' }
+#' }
 offcanvas_chat_server <- function(
   id,
   chat_server_fun,

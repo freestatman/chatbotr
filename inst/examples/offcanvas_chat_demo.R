@@ -24,8 +24,7 @@ library(bslib)
 
 # If you’re using the shinychat package, uncomment this:
 # library(shinychat)
-
-source("R/offcanvas_chat_module.R")
+# source("R/offcanvas_chat_module.R")
 
 ui <- page_fluid(
   theme = bs_theme(version = 5), # ensure Bootstrap 5
