@@ -1,3 +1,6 @@
+if (FALSE) {
+  pak::pkg_install("btw", upgrade = FALSE)
+}
 library(btw)
 library(ellmer)
 
@@ -43,9 +46,15 @@ ls("package:btw")
 # [36] "edit_btw_md"
 # [37] "use_btw_md"
 #
+#
+withr::local_options(list(
+  # btw.client = chat_emind()
+  btw.client = chat_github(model = "gpt-5-mini")
+))
 
-btw_app
+btw_app()
 btw_mcp_session()
+1
 
 library(mcptools)
 ls("package:mcptools")
@@ -53,16 +62,19 @@ mcp_tools
 
 chat <- chat_emind()
 chat
-chat <- chat_github()
-chat
 
-withr::local_options(list(
-  # btw.client = chat_emind()
-  btw.client = chat_github()
-))
+chat <- chat_github(
+  model = "gpt-5",
+  system_prompt = "You are a helpful assistant specialized in R programming and Shiny applications. you are a tidyverse developer."
+)
+chat$chat(
+  " use shinychat r package and its source code, to make a new shiny module with an offcanvas chatbot "
+)
+
+chat |> live_browser()
+
 
 chat$get_provider()
-
 
 btw(mtcars)
 btw("{dplyr}", ?dplyr::across)
