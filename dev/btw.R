@@ -73,6 +73,8 @@ chat$chat(
 
 chat |> live_browser()
 
+shiny::runGadget(shinychat::chat_app(chat))
+
 
 chat$get_provider()
 
