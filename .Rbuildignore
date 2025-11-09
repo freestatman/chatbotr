@@ -1,0 +1,11 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^README\.Rmd$
+^LICENSE\.md$
+^\.git$
+^\.gitignore$
+^codecompanion-workspace\.json$
+^archived$
+^dev$
+^shiny\.react\.shadcn\.duckdb.*$
+^QUICKSTART\.md$

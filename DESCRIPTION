@@ -1,0 +1,31 @@
+Package: chatbotr
+Type: Package
+Title: Shiny Chatbot Application with Offcanvas Interface
+Version: 0.1.0
+Authors@R: 
+    person("Freeman", "Wang", , "freestatman@gmail.com", role = c("aut", "cre"))
+Description: A Shiny application that provides an interactive chatbot interface 
+    using an offcanvas (slide-out) panel. Integrates with shinychat and ellmer
+    for AI-powered conversations. The package includes modules for building
+    chatbot interfaces and a ready-to-run application.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Depends: 
+    R (>= 4.1.0)
+Imports:
+    shiny (>= 1.7.0),
+    bslib (>= 0.5.0),
+    shinychat,
+    ellmer
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    mockery
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+URL: https://github.com/freestatman/chatbotr
+BugReports: https://github.com/freestatman/chatbotr/issues
