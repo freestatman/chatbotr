@@ -18,6 +18,7 @@
 #' @param chat_ui_args Named list of additional arguments passed to chat_ui_fun
 #' @param theme Color theme: "light" or "dark" (default: "light")
 #' @param enable_minimize Enable minimize functionality (default: TRUE)
+#' @param enable_maximize Enable maximize functionality (default: TRUE)
 #' @param header_actions Optional UI elements for header actions (e.g., clear button)
 #'
 #' @return A Shiny UI tagList containing the floating trigger and chat panel
@@ -53,6 +54,7 @@ floating_chat_ui <- function(
   chat_ui_args = list(),
   theme = c("light", "dark"),
   enable_minimize = TRUE,
+  enable_maximize = TRUE,
   header_actions = NULL
 ) {
   stopifnot(is.function(chat_ui_fun))
@@ -144,6 +146,17 @@ floating_chat_ui <- function(
     NULL
   }
   
+  maximize_btn <- if (enable_maximize) {
+    shiny::tags$button(
+      class = "btn btn-sm btn-ghost floating-chat-maximize",
+      type = "button",
+      style = "padding: 4px 8px;",
+      shiny::icon("expand")
+    )
+  } else {
+    NULL
+  }
+  
   header <- shiny::tags$div(
     class = "floating-chat-header",
     style = paste0(
@@ -161,6 +174,7 @@ floating_chat_ui <- function(
     shiny::tags$div(
       class = "d-flex gap-2 align-items-center",
       header_actions,
+      maximize_btn,
       minimize_btn,
       shiny::tags$button(
         class = "btn btn-sm btn-ghost floating-chat-close",
@@ -196,6 +210,10 @@ floating_chat_ui <- function(
     class = paste("floating-chat-panel", theme_class),
     style = panel_style,
     `data-minimized` = "false",
+    `data-maximized` = "false",
+    `data-original-width` = panel_width,
+    `data-original-height` = panel_height,
+    `data-original-position` = trigger_position,
     header,
     body
   )
@@ -261,6 +279,59 @@ floating_chat_ui <- function(
           });
         }
         
+        // Maximize chat
+        const maximizeBtn = panel.querySelector(".floating-chat-maximize");
+        if (maximizeBtn) {
+          maximizeBtn.addEventListener("click", function() {
+            const isMaximized = panel.getAttribute("data-maximized") === "true";
+            const isMinimized = panel.getAttribute("data-minimized") === "true";
+            
+            if (isMaximized) {
+              // Restore to original size
+              const originalWidth = panel.getAttribute("data-original-width");
+              const originalHeight = panel.getAttribute("data-original-height");
+              const originalPosition = panel.getAttribute("data-original-position");
+              const parts = originalPosition.split("-");
+              const vert = parts[0];
+              const horiz = parts[1];
+              
+              panel.style.width = originalWidth + "px";
+              panel.style.height = originalHeight + "px";
+              panel.style.top = vert === "top" ? "%spx" : "auto";
+              panel.style.bottom = vert === "bottom" ? "%spx" : "auto";
+              panel.style.left = horiz === "left" ? "%spx" : "auto";
+              panel.style.right = horiz === "right" ? "%spx" : "auto";
+              panel.style.borderRadius = "12px";
+              
+              panel.setAttribute("data-maximized", "false");
+              maximizeBtn.innerHTML = \'<i class="fa fa-expand"></i>\';
+            } else {
+              // Restore from minimized state if needed
+              if (isMinimized) {
+                const originalHeight = panel.getAttribute("data-original-height");
+                panel.style.height = originalHeight + "px";
+                panel.setAttribute("data-minimized", "false");
+                const minBtn = panel.querySelector(".floating-chat-minimize");
+                if (minBtn) {
+                  minBtn.innerHTML = \'<i class="fa fa-minus"></i>\';
+                }
+              }
+              
+              // Maximize to full screen
+              panel.style.top = "0";
+              panel.style.bottom = "0";
+              panel.style.left = "0";
+              panel.style.right = "0";
+              panel.style.width = "100vw";
+              panel.style.height = "100vh";
+              panel.style.borderRadius = "0";
+              
+              panel.setAttribute("data-maximized", "true");
+              maximizeBtn.innerHTML = \'<i class="fa fa-compress"></i>\';
+            }
+          });
+        }
+        
         // Close on overlay click
         overlay.addEventListener("click", function() {
           closeChat();
@@ -286,7 +357,7 @@ floating_chat_ui <- function(
         initFloatingChat();
       }
     })();
-  ', trigger_id, panel_id, overlay_id, panel_height)))
+  ', trigger_id, panel_id, overlay_id, panel_height, panel_offset, panel_offset, panel_offset, panel_offset)))
   
   shiny::tagList(
     overlay,

@@ -1,6 +1,7 @@
 # Example: Floating Chat Module Demo
 #
 # This example demonstrates the floating chat module with various configurations
+pkgload::load_all()
 
 library(shiny)
 library(bslib)
@@ -9,7 +10,9 @@ library(bslib)
 ui <- page_fluid(
   theme = bs_theme(
     version = 5,
-    bootswatch = "flatly"
+    bootswatch = "flatly",
+    primary = "#667eea",
+    base_font = font_google("Inter")
   ),
 
   # Include Font Awesome and custom CSS
@@ -21,114 +24,128 @@ ui <- page_fluid(
     tags$link(
       rel = "stylesheet",
       href = "floating_chat.css"
-    )
+    ),
+    tags$style(HTML("
+      .page-title {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin: -1rem -1rem 2rem -1rem;
+        border-radius: 0 0 1rem 1rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      }
+      .feature-card {
+        transition: transform 0.2s;
+        height: 100%;
+      }
+      .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      }
+      .stat-card {
+        text-align: center;
+        padding: 1rem;
+      }
+    "))
   ),
 
-  # Main application content
-  titlePanel("Floating Chat Module Demo"),
+  # Hero section
+  div(
+    class = "page-title text-center",
+    h1("AI Assistant Demo", style = "margin: 0; font-weight: 600;"),
+    p("Experience modern floating chat interface with AI-powered conversations", 
+      style = "margin: 0.5rem 0 0 0; opacity: 0.9;")
+  ),
 
-  fluidRow(
-    column(
-      12,
-      h3("Welcome to the Floating Chat Demo"),
-      p(
-        "This demo showcases the floating chat module with different configurations."
+  # Quick instructions
+  div(
+    class = "alert alert-info mb-4",
+    style = "border-left: 4px solid #667eea;",
+    icon("circle-info"),
+    strong(" Quick Start: "),
+    "Click the robot icon in the bottom-right corner to open the AI chat assistant."
+  ),
+
+  # Main content grid
+  layout_columns(
+    col_widths = c(5, 7),
+    
+    # Left column - Features
+    card(
+      class = "feature-card",
+      card_header(
+        class = "bg-primary text-white",
+        icon("star"), " Feature Highlights"
       ),
-      p(
-        "Click the floating chat button in the bottom-right corner to start chatting!"
-      )
-    )
-  ),
-
-  fluidRow(
-    column(
-      6,
-      card(
-        card_header("Feature Highlights"),
-        card_body(
-          tags$ul(
-            tags$li("Floating trigger icon with smooth animations"),
-            tags$li("Customizable positioning (4 corners available)"),
-            tags$li("Dark and light theme support"),
-            tags$li("Minimize/expand functionality"),
-            tags$li("Click-outside-to-close overlay"),
-            tags$li("Responsive mobile design"),
-            tags$li("Modern shadcn/ui inspired styling")
+      card_body(
+        tags$div(
+          style = "display: grid; gap: 0.75rem;",
+          tags$div(
+            icon("magic", class = "text-primary"), 
+            " Smooth animations and transitions"
+          ),
+          tags$div(
+            icon("location-dot", class = "text-success"), 
+            " Customizable positioning (4 corners)"
+          ),
+          tags$div(
+            icon("palette", class = "text-info"), 
+            " Dark and light theme support"
+          ),
+          tags$div(
+            icon("window-minimize", class = "text-warning"), 
+            " Minimize/maximize functionality"
+          ),
+          tags$div(
+            icon("hand-pointer", class = "text-danger"), 
+            " Click-outside-to-close overlay"
+          ),
+          tags$div(
+            icon("mobile-screen", class = "text-secondary"), 
+            " Responsive mobile design"
           )
         )
       )
     ),
-    column(
-      6,
-      card(
-        card_header("Configuration"),
-        card_body(
-          selectInput(
-            "position",
-            "Trigger Position:",
-            choices = c(
-              "Bottom Right" = "bottom-right",
-              "Bottom Left" = "bottom-left",
-              "Top Right" = "top-right",
-              "Top Left" = "top-left"
-            ),
-            selected = "bottom-right"
-          ),
-          selectInput(
-            "theme_select",
-            "Theme:",
-            choices = c("Light" = "light", "Dark" = "dark"),
-            selected = "light"
-          ),
-          p(
-            class = "text-muted",
-            "Note: Changing these settings requires reloading the app."
-          )
-        )
+    
+    # Right column - Dashboard
+    card(
+      class = "feature-card",
+      card_header(
+        class = "bg-success text-white",
+        icon("chart-line"), " Live Dashboard"
+      ),
+      card_body(
+        plotOutput("sample_plot", height = "280px")
       )
     )
   ),
-
-  fluidRow(
-    column(
-      12,
-      card(
-        card_header("Sample Content"),
-        card_body(
-          h4("Interactive Dashboard"),
-          plotOutput("sample_plot", height = "300px"),
-          hr(),
-          fluidRow(
-            column(
-              4,
-              value_box(
-                title = "Total Users",
-                value = "1,234",
-                showcase = icon("users"),
-                theme = "primary"
-              )
-            ),
-            column(
-              4,
-              value_box(
-                title = "Revenue",
-                value = "$45.6K",
-                showcase = icon("dollar-sign"),
-                theme = "success"
-              )
-            ),
-            column(
-              4,
-              value_box(
-                title = "Engagement",
-                value = "87%",
-                showcase = icon("chart-line"),
-                theme = "info"
-              )
-            )
-          )
-        )
-      )
+  
+  # Statistics cards
+  layout_columns(
+    col_widths = c(4, 4, 4),
+    fillable = FALSE,
+    
+    value_box(
+      title = "Active Users",
+      value = "1,234",
+      showcase = icon("users"),
+      theme = "primary",
+      p("↑ 12% from last month", class = "text-muted small")
+    ),
+    value_box(
+      title = "Total Revenue",
+      value = "$45.6K",
+      showcase = icon("dollar-sign"),
+      theme = "success",
+      p("↑ 8% from last month", class = "text-muted small")
+    ),
+    value_box(
+      title = "Engagement Rate",
+      value = "87%",
+      showcase = icon("chart-line"),
+      theme = "info",
+      p("↑ 5% from last month", class = "text-muted small")
     )
   ),
 
@@ -137,74 +154,58 @@ ui <- page_fluid(
     id = "demo_chat",
     title = "AI Assistant",
     trigger_position = "bottom-right",
-    trigger_icon = "comments",
-    panel_width = 400,
-    panel_height = 700,
+    trigger_icon = "robot",
+    panel_width = 450,
+    panel_height = 650,
     theme = "light",
     enable_minimize = TRUE,
+    enable_maximize = TRUE,
     header_actions = actionButton(
       "clear_demo_chat",
-      icon("trash"),
+      icon("trash-can"),
       class = "btn btn-sm btn-ghost",
-      title = "Clear chat"
+      title = "Clear chat history"
     ),
     chat_ui_fun = shinychat::chat_mod_ui
-    # chat_ui_fun = function(id) {
-    #   # Simple chat UI for demo purposes
-    #   # Replace with shinychat::chat_ui or shinychat::chat_mod_ui in production
-    #   ns <- NS(id)
-    #   tagList(
-    #     div(
-    #       id = ns("messages"),
-    #       style = "flex: 1; overflow-y: auto; padding: 20px;",
-    #       div(
-    #         class = "alert alert-info",
-    #         strong("Demo Mode:"),
-    #         " This is a demo UI. Integrate with shinychat for full functionality."
-    #       )
-    #     ),
-    #
-    #     div(
-    #       style = "padding: 16px; border-top: 1px solid #e2e8f0;",
-    #       textInput(
-    #         ns("message_input"),
-    #         NULL,
-    #         placeholder = "Type your message...",
-    #         width = "100%"
-    #       ),
-    #       actionButton(
-    #         ns("send_btn"),
-    #         "Send",
-    #         icon = icon("paper-plane"),
-    #         class = "btn btn-primary w-100"
-    #       )
-    #     )
-    #   )
-    # }
   )
 )
 
 # Demo server
 server <- function(input, output, session) {
-  # Sample plot
+  # Enhanced sample plot with better styling
   output$sample_plot <- renderPlot({
+    set.seed(42)
     x <- seq(0, 10, length.out = 100)
-    y <- sin(x) + rnorm(100, 0, 0.1)
+    y1 <- sin(x) * 2 + rnorm(100, 0, 0.15)
+    y2 <- cos(x) * 1.5 + rnorm(100, 0, 0.15)
+    
+    par(bg = "#f8f9fa", mar = c(4, 4, 2, 1))
     plot(
-      x,
-      y,
+      x, y1,
       type = "l",
       col = "#667eea",
-      lwd = 2,
-      main = "Sample Data Visualization",
-      xlab = "Time",
-      ylab = "Value"
+      lwd = 3,
+      ylim = c(-4, 4),
+      main = "Performance Metrics Over Time",
+      xlab = "Time Period",
+      ylab = "Metric Value",
+      family = "sans",
+      las = 1
     )
-    grid()
-  })
+    lines(x, y2, col = "#764ba2", lwd = 3)
+    grid(col = "white", lwd = 1.5)
+    legend(
+      "topright",
+      legend = c("Metric A", "Metric B"),
+      col = c("#667eea", "#764ba2"),
+      lwd = 3,
+      bty = "n",
+      cex = 0.9
+    )
+  }, bg = "transparent")
 
   # In production, use:
-  floating_chat_server(
+  chat <- floating_chat_server(
     id = "demo_chat",
     chat_server_fun = shinychat::chat_mod_server,
     client = ellmer::chat_github(
@@ -212,26 +213,11 @@ server <- function(input, output, session) {
     )
   )
 
-  # # Demo chat server logic
-  # moduleServer("demo_chat", function(input, output, session) {
-  #   # Simple echo server for demo
-  #   observeEvent(input$chat.send_btn, {
-  #     message <- input$chat.message_input
-  #     if (nzchar(message)) {
-  #       showNotification(
-  #         paste("You said:", message),
-  #         type = "message",
-  #         duration = 3
-  #       )
-  #     }
-  #   })
-  # })
-
-  # Clear chat handler
+  # Clear chat handler - reset the chat client
   observeEvent(input$clear_demo_chat, {
-    showNotification("Chat cleared!", type = "message", duration = 2)
+    chat$clear()
+    showNotification("Chat cleared and client reset!", type = "message", duration = 2)
   })
 }
 
-# Run the app
-shinyApp(ui, server)
+shiny::runApp(shinyApp(ui, server), port = 1234)

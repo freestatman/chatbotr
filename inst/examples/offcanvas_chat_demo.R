@@ -18,6 +18,7 @@
 # # Run the Shiny app
 # cat("Launching app...\n")
 # shiny::runApp(launch.browser = TRUE)
+pkgload::load_all()
 
 library(shiny)
 library(bslib)
