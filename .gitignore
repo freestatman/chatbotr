@@ -50,3 +50,4 @@ data/*
 # Documentation builds
 docs/_build/
 archived
+junk/
