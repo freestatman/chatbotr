@@ -14,6 +14,8 @@
 #' @param open_icon Optional icon name for the open button (e.g., "comments")
 #' @param chat_ui_fun Function that generates the chat UI, typically from shinychat
 #' @param chat_ui_args Named list of additional arguments passed to chat_ui_fun
+#' @param welcome_message Optional welcome message to display when chat is first opened.
+#'   If provided, this will be passed to the chat UI function via chat_ui_args.
 #' @param header_right Optional UI elements to display in the header's right side
 #'
 #' @return A Shiny UI tagList containing the open button and offcanvas panel
@@ -32,7 +34,8 @@
 #'     id = "chat",
 #'     title = "Assistant",
 #'     placement = "end",
-#'     chat_ui_fun = shinychat::chat_mod_ui
+#'     chat_ui_fun = shinychat::chat_mod_ui,
+#'     welcome_message = "Welcome! How can I assist you?"
 #'   )
 #' )
 #' }
@@ -46,11 +49,17 @@ offcanvas_chat_ui <- function(
   open_icon = NULL,
   chat_ui_fun,
   chat_ui_args = list(),
+  welcome_message = NULL,
   header_right = NULL
 ) {
   stopifnot(is.function(chat_ui_fun))
   placement <- match.arg(placement)
   ns <- shiny::NS(id)
+  
+  # Add welcome_message to chat_ui_args if provided
+  if (!is.null(welcome_message)) {
+    chat_ui_args$messages <- welcome_message
+  }
 
   canvas_id <- ns("chat_canvas")
   label_id <- ns("chat_canvas_label")
@@ -134,6 +143,7 @@ offcanvas_chat_ui <- function(
 #'
 #' @return Returns the result of the chat server function
 #'
+#' @import ellmer
 #' @export
 #'
 #' @examples
@@ -149,15 +159,25 @@ offcanvas_chat_ui <- function(
 #' }
 #' }
 offcanvas_chat_server <- function(
-  id,
-  chat_server_fun,
-  ...
-) {
+    id,
+    chat_server_fun,
+    client,
+    ...) {
   stopifnot(is.function(chat_server_fun))
+  # welcome <- ellmer::Turn(role = "user", contents = list(ellmer::ContentText("Hello, world!")))
+  # client$set_turns(list(welcome))
+
   shiny::moduleServer(id, function(input, output, session) {
+    client$set_turns(list(
+      ellmer::Turn(
+        role = "user",
+        contents = list(
+          ellmer::ContentText("Give me a short poem about R programming.")
+        )
+      )
+    ))
     # If the underlying chat server is also a module, pass the child id
-    "chat"
-    chat_server_fun("chat", ...)
+    chat_server_fun("chat", client, ...)
   })
 }
 

@@ -166,7 +166,8 @@ ui <- page_fluid(
       class = "btn btn-sm btn-ghost",
       title = "Clear chat history"
     ),
-    chat_ui_fun = shinychat::chat_mod_ui
+    chat_ui_fun = shinychat::chat_mod_ui,
+    welcome_message = "👋 Hello! I'm your AI assistant. I can help you with questions about this demo app or anything else you'd like to discuss. How can I assist you today?"
   )
 )
 

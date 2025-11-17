@@ -16,6 +16,8 @@
 #' @param panel_offset Offset from viewport edges in pixels (default: 20)
 #' @param chat_ui_fun Function that generates the chat UI, typically from shinychat
 #' @param chat_ui_args Named list of additional arguments passed to chat_ui_fun
+#' @param welcome_message Optional welcome message to display when chat is first opened.
+#'   If provided, this will be passed to the chat UI function via chat_ui_args.
 #' @param theme Color theme: "light" or "dark" (default: "light")
 #' @param enable_minimize Enable minimize functionality (default: TRUE)
 #' @param enable_maximize Enable maximize functionality (default: TRUE)
@@ -37,7 +39,8 @@
 #'     id = "floating_chat",
 #'     title = "AI Assistant",
 #'     trigger_position = "bottom-right",
-#'     chat_ui_fun = shinychat::chat_mod_ui
+#'     chat_ui_fun = shinychat::chat_mod_ui,
+#'     welcome_message = "Hello! I'm your AI assistant. How can I help you today?"
 #'   )
 #' )
 #' }
@@ -52,6 +55,7 @@ floating_chat_ui <- function(
   panel_offset = 20,
   chat_ui_fun,
   chat_ui_args = list(),
+  welcome_message = NULL,
   theme = c("light", "dark"),
   enable_minimize = TRUE,
   enable_maximize = TRUE,
@@ -61,6 +65,11 @@ floating_chat_ui <- function(
   trigger_position <- match.arg(trigger_position)
   theme <- match.arg(theme)
   ns <- shiny::NS(id)
+  
+  # Add welcome_message to chat_ui_args if provided
+  if (!is.null(welcome_message)) {
+    chat_ui_args$messages <- welcome_message
+  }
 
   # Generate IDs
   trigger_id <- ns("trigger")

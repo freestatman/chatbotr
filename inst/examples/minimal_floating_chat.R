@@ -57,7 +57,8 @@ ui <- page_fluid(
       style = "padding: 4px 8px;",
       title = "Clear conversation"
     ),
-    chat_ui_fun = shinychat::chat_mod_ui
+    chat_ui_fun = shinychat::chat_mod_ui,
+    welcome_message = "Welcome! I'm your AI assistant. How can I help you today?"
   )
 )
 
