@@ -40,9 +40,10 @@ ui <- page_fluid(
     open_class = "btn btn-outline-primary",
     open_icon = "comments",
     # Plug in shinychat's UI function here:
-    chat_ui_fun = shinychat::chat_mod_ui
-    # If you need to pass args to shinychat's UI:
-    # chat_ui_args = list(welcome = "Hi, how can I help?")
+    chat_ui_fun = shinychat::chat_mod_ui,
+    welcome_message = "Hi! I'm here to help. Ask me anything!"
+    # If you need to pass additional args to shinychat's UI:
+    # chat_ui_args = list(placeholder = "Type your message...")
   )
 )
 
