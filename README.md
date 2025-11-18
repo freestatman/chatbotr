@@ -284,6 +284,72 @@ Launch the chatbot Shiny application.
 - `port` - TCP port number (default: random)
 - `host` - IPv4 address to listen on (default: "127.0.0.1")
 
+## BYOK (Bring Your Own Key)
+
+The chatbotr package now supports **Bring Your Own Key (BYOK)** functionality, giving you complete control over your AI provider and model selection.
+
+### Supported Providers
+
+- **GitHub Models** - GPT-4o, Llama, Phi-3.5, Mistral
+- **OpenAI** - GPT-4, GPT-3.5, o1
+- **Anthropic** - Claude 3.5 Sonnet, Claude 3 Opus
+- **Google Gemini** - Gemini 1.5 Pro/Flash
+- **Azure OpenAI** - Enterprise deployments
+- **Ollama** - Local LLM inference
+
+### Quick Example
+
+```r
+library(shiny)
+library(bslib)
+library(chatbotr)
+
+ui <- page_fluid(
+  # Settings UI
+  api_settings_ui("settings"),
+  
+  # Chat interface
+  floating_chat_ui(
+    id = "chat",
+    chat_ui_fun = shinychat::chat_mod_ui
+  )
+)
+
+server <- function(input, output, session) {
+  # Configure API settings
+  settings <- api_settings_server("settings")
+  
+  # Initialize chat when configured
+  observe({
+    req(settings$is_configured())
+    floating_chat_server(
+      "chat",
+      chat_server_fun = shinychat::chat_mod_server,
+      client = settings$client()
+    )
+  })
+}
+
+shinyApp(ui, server)
+```
+
+### Documentation
+
+For comprehensive BYOK documentation, see:
+- [BYOK Guide](inst/www/BYOK_GUIDE.md) - Complete guide with examples
+- [Floating Chat Example](inst/examples/byok_floating_chat.R) - Working example
+- [Offcanvas Chat Example](inst/examples/byok_offcanvas_chat.R) - Alternative pattern
+
+Run examples:
+
+```r
+# Floating chat with BYOK
+source(system.file("examples/byok_floating_chat.R", package = "chatbotr"))
+
+# Offcanvas chat with BYOK
+source(system.file("examples/byok_offcanvas_chat.R", package = "chatbotr"))
+```
+
 ## Dependencies
 
 - **shiny** (>= 1.7.0) - Web application framework
