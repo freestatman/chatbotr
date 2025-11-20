@@ -13,10 +13,11 @@ floating_chat_ui(
   panel_width = 400,
   panel_height = 600,
   panel_offset = 20,
-  chat_ui_fun,
   chat_ui_args = list(),
+  welcome_message = NULL,
   theme = c("light", "dark"),
   enable_minimize = TRUE,
+  enable_maximize = TRUE,
   header_actions = NULL
 )
 }
@@ -38,13 +39,16 @@ floating_chat_ui(
 
 \item{panel_offset}{Offset from viewport edges in pixels (default: 20)}
 
-\item{chat_ui_fun}{Function that generates the chat UI, typically from shinychat}
+\item{chat_ui_args}{Named list of additional arguments passed to shinychat::chat_mod_ui()}
 
-\item{chat_ui_args}{Named list of additional arguments passed to chat_ui_fun}
+\item{welcome_message}{Optional welcome message to display when chat is first opened.
+If provided, this will be passed to the chat UI function via chat_ui_args.}
 
 \item{theme}{Color theme: "light" or "dark" (default: "light")}
 
 \item{enable_minimize}{Enable minimize functionality (default: TRUE)}
+
+\item{enable_maximize}{Enable maximize functionality (default: TRUE)}
 
 \item{header_actions}{Optional UI elements for header actions (e.g., clear button)}
 }
@@ -68,7 +72,7 @@ ui <- page_fluid(
     id = "floating_chat",
     title = "AI Assistant",
     trigger_position = "bottom-right",
-    chat_ui_fun = shinychat::chat_mod_ui
+    welcome_message = "Hello! I'm your AI assistant. How can I help you today?"
   )
 )
 }

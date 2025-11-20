@@ -14,8 +14,7 @@
 #' @param panel_width Width of the chat panel in pixels (default: 400)
 #' @param panel_height Height of the chat panel in pixels (default: 600)
 #' @param panel_offset Offset from viewport edges in pixels (default: 20)
-#' @param chat_ui_fun Function that generates the chat UI, typically from shinychat
-#' @param chat_ui_args Named list of additional arguments passed to chat_ui_fun
+#' @param chat_ui_args Named list of additional arguments passed to shinychat::chat_mod_ui() 
 #' @param welcome_message Optional welcome message to display when chat is first opened.
 #'   If provided, this will be passed to the chat UI function via chat_ui_args.
 #' @param theme Color theme: "light" or "dark" (default: "light")
@@ -39,7 +38,6 @@
 #'     id = "floating_chat",
 #'     title = "AI Assistant",
 #'     trigger_position = "bottom-right",
-#'     chat_ui_fun = shinychat::chat_mod_ui,
 #'     welcome_message = "Hello! I'm your AI assistant. How can I help you today?"
 #'   )
 #' )
@@ -53,7 +51,6 @@ floating_chat_ui <- function(
   panel_width = 400,
   panel_height = 600,
   panel_offset = 20,
-  chat_ui_fun,
   chat_ui_args = list(),
   welcome_message = NULL,
   theme = c("light", "dark"),
@@ -61,7 +58,6 @@ floating_chat_ui <- function(
   enable_maximize = TRUE,
   header_actions = NULL
 ) {
-  stopifnot(is.function(chat_ui_fun))
   trigger_position <- match.arg(trigger_position)
   theme <- match.arg(theme)
   ns <- shiny::NS(id)
@@ -196,7 +192,7 @@ floating_chat_ui <- function(
   
   # Chat UI content
   chat_ui <- do.call(
-    chat_ui_fun,
+    shinychat::chat_mod_ui,
     c(list(id = ns("chat")), chat_ui_args)
   )
   
@@ -384,7 +380,6 @@ floating_chat_ui <- function(
 #' floating chat namespace.
 #'
 #' @param id Namespace ID matching the UI module
-#' @param chat_server_fun Server function for the chat module, typically from shinychat
 #' @param ... Additional arguments passed to chat_server_fun (e.g., client, system_prompt)
 #'
 #' @return Returns the result of the chat server function
@@ -398,20 +393,18 @@ floating_chat_ui <- function(
 #'   
 #'   floating_chat_server(
 #'     id = "floating_chat",
-#'     chat_server_fun = shinychat::chat_mod_server,
 #'     client = github
 #'   )
 #' }
 #' }
 floating_chat_server <- function(
   id,
-  chat_server_fun,
+  client,
   ...
 ) {
-  stopifnot(is.function(chat_server_fun))
   shiny::moduleServer(id, function(input, output, session) {
     # Wrap the underlying chat server within our namespace
-    chat_server_fun("chat", ...)
+    shinychat::chat_mod_server("chat", client, ...)
   })
 }
 
