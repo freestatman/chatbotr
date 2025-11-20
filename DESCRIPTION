@@ -31,4 +31,4 @@ VignetteBuilder: knitr
 URL: https://github.com/freestatman/chatbotr
 BugReports: https://github.com/freestatman/chatbotr/issues
 Remotes:
-    jcheng5/shinychat
+    posit-dev/shinychat/pkg-r
