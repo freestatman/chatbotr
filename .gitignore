@@ -47,7 +47,11 @@ data/*
 *.tar.gz
 *.zip
 
+# memory bank files
+memory-bank/
+
 # Documentation builds
 docs/_build/
 archived
 junk/
+dev/

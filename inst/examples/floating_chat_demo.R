@@ -1,224 +1,95 @@
-# Example: Floating Chat Module Demo
-#
-# This example demonstrates the floating chat module with various configurations
-pkgload::load_all()
+#!/usr/bin/env Rscript
+
+# Minimal Floating Chat Example
+# This example demonstrates a basic floating chat with clear functionality
 
 library(shiny)
 library(bslib)
+library(shinychat)
+library(ellmer)
+pkgload::load_all()
 
-# Demo UI with floating chat
+# UI
 ui <- page_fluid(
-  theme = bs_theme(
-    version = 5,
-    bootswatch = "flatly",
-    primary = "#667eea",
-    base_font = font_google("Inter")
-  ),
+  theme = bs_theme(version = 5, preset = "bootstrap"),
 
-  # Include Font Awesome and custom CSS
-  tags$head(
-    tags$link(
-      rel = "stylesheet",
-      href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    ),
-    tags$link(
-      rel = "stylesheet",
-      href = "floating_chat.css"
-    ),
-    tags$style(HTML("
-      .page-title {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 2rem 0;
-        margin: -1rem -1rem 2rem -1rem;
-        border-radius: 0 0 1rem 1rem;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      }
-      .feature-card {
-        transition: transform 0.2s;
-        height: 100%;
-      }
-      .feature-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-      }
-      .stat-card {
-        text-align: center;
-        padding: 1rem;
-      }
-    "))
-  ),
-
-  # Hero section
+  # Main app content
   div(
-    class = "page-title text-center",
-    h1("AI Assistant Demo", style = "margin: 0; font-weight: 600;"),
-    p("Experience modern floating chat interface with AI-powered conversations", 
-      style = "margin: 0.5rem 0 0 0; opacity: 0.9;")
-  ),
+    class = "container mt-5",
+    h1("Minimal Floating Chat Demo"),
+    p("This is your main application content."),
+    p(
+      "Click the floating chat button in the bottom-right corner to open the chat assistant."
+    ),
 
-  # Quick instructions
-  div(
-    class = "alert alert-info mb-4",
-    style = "border-left: 4px solid #667eea;",
-    icon("circle-info"),
-    strong(" Quick Start: "),
-    "Click the robot icon in the bottom-right corner to open the AI chat assistant."
-  ),
-
-  # Main content grid
-  layout_columns(
-    col_widths = c(5, 7),
-    
-    # Left column - Features
-    card(
-      class = "feature-card",
-      card_header(
-        class = "bg-primary text-white",
-        icon("star"), " Feature Highlights"
-      ),
-      card_body(
-        tags$div(
-          style = "display: grid; gap: 0.75rem;",
-          tags$div(
-            icon("magic", class = "text-primary"), 
-            " Smooth animations and transitions"
-          ),
-          tags$div(
-            icon("location-dot", class = "text-success"), 
-            " Customizable positioning (4 corners)"
-          ),
-          tags$div(
-            icon("palette", class = "text-info"), 
-            " Dark and light theme support"
-          ),
-          tags$div(
-            icon("window-minimize", class = "text-warning"), 
-            " Minimize/maximize functionality"
-          ),
-          tags$div(
-            icon("hand-pointer", class = "text-danger"), 
-            " Click-outside-to-close overlay"
-          ),
-          tags$div(
-            icon("mobile-screen", class = "text-secondary"), 
-            " Responsive mobile design"
-          )
+    div(
+      class = "card mt-4",
+      div(
+        class = "card-body",
+        h5(class = "card-title", "Features Demonstrated:"),
+        tags$ul(
+          tags$li("Floating chat button that opens an overlay chat panel"),
+          tags$li("Clean, minimal design with light theme"),
+          tags$li("Clear button in the header to reset conversation"),
+          tags$li("Minimize and maximize controls"),
+          tags$li("Click outside to close the chat")
         )
       )
-    ),
-    
-    # Right column - Dashboard
-    card(
-      class = "feature-card",
-      card_header(
-        class = "bg-success text-white",
-        icon("chart-line"), " Live Dashboard"
-      ),
-      card_body(
-        plotOutput("sample_plot", height = "280px")
-      )
-    )
-  ),
-  
-  # Statistics cards
-  layout_columns(
-    col_widths = c(4, 4, 4),
-    fillable = FALSE,
-    
-    value_box(
-      title = "Active Users",
-      value = "1,234",
-      showcase = icon("users"),
-      theme = "primary",
-      p("↑ 12% from last month", class = "text-muted small")
-    ),
-    value_box(
-      title = "Total Revenue",
-      value = "$45.6K",
-      showcase = icon("dollar-sign"),
-      theme = "success",
-      p("↑ 8% from last month", class = "text-muted small")
-    ),
-    value_box(
-      title = "Engagement Rate",
-      value = "87%",
-      showcase = icon("chart-line"),
-      theme = "info",
-      p("↑ 5% from last month", class = "text-muted small")
     )
   ),
 
-  # Floating chat module
+  # Floating chat UI with clear button
   floating_chat_ui(
-    id = "demo_chat",
+    id = "my_chat",
     title = "AI Assistant",
     trigger_position = "bottom-right",
     trigger_icon = "robot",
-    panel_width = 450,
-    panel_height = 650,
+    trigger_size = 60,
+    panel_width = 600,
+    panel_height = 800,
     theme = "light",
     enable_minimize = TRUE,
     enable_maximize = TRUE,
+    # Add a clear button to the header
     header_actions = actionButton(
-      "clear_demo_chat",
-      icon("trash-can"),
+      inputId = "clear_chat",
+      label = NULL,
+      icon = icon("trash-alt"),
       class = "btn btn-sm btn-ghost",
-      title = "Clear chat history"
+      style = "padding: 4px 8px;",
+      title = "Clear conversation"
     ),
-    chat_ui_fun = shinychat::chat_mod_ui,
-    welcome_message = "👋 Hello! I'm your AI assistant. I can help you with questions about this demo app or anything else you'd like to discuss. How can I assist you today?"
+    welcome_message = "Welcome! I'm your AI assistant. How can I help you today?"
   )
 )
 
-# Demo server
+# Server
 server <- function(input, output, session) {
-  # Enhanced sample plot with better styling
-  output$sample_plot <- renderPlot({
-    set.seed(42)
-    x <- seq(0, 10, length.out = 100)
-    y1 <- sin(x) * 2 + rnorm(100, 0, 0.15)
-    y2 <- cos(x) * 1.5 + rnorm(100, 0, 0.15)
-    
-    par(bg = "#f8f9fa", mar = c(4, 4, 2, 1))
-    plot(
-      x, y1,
-      type = "l",
-      col = "#667eea",
-      lwd = 3,
-      ylim = c(-4, 4),
-      main = "Performance Metrics Over Time",
-      xlab = "Time Period",
-      ylab = "Metric Value",
-      family = "sans",
-      las = 1
-    )
-    lines(x, y2, col = "#764ba2", lwd = 3)
-    grid(col = "white", lwd = 1.5)
-    legend(
-      "topright",
-      legend = c("Metric A", "Metric B"),
-      col = c("#667eea", "#764ba2"),
-      lwd = 3,
-      bty = "n",
-      cex = 0.9
-    )
-  }, bg = "transparent")
-
-  # In production, use:
+  # Floating chat server
   chat <- floating_chat_server(
-    id = "demo_chat",
-    chat_server_fun = shinychat::chat_mod_server,
+    id = "my_chat",
     client = ellmer::chat_github(
       system_prompt = "You are a helpful assistant for this demo app."
     )
   )
 
-  # Clear chat handler - reset the chat client
-  observeEvent(input$clear_demo_chat, {
-    chat$clear()
-    showNotification("Chat cleared and client reset!", type = "message", duration = 2)
+  # Clear chat functionality - Use shinychat::chat_clear()
+  observeEvent(input$clear_chat, {
+    # The chat ID is namespaced: module ID "my_chat" + nested chat ID "chat-chat"
+    shinychat::chat_clear(
+      id = "my_chat-chat-chat",
+      session = session
+    )
+    # another valid approach:
+    # chat$clear()
+
+    showNotification(
+      "Chat cleared! Starting a new conversation.",
+      type = "message",
+      duration = 3
+    )
   })
 }
 
-shiny::runApp(shinyApp(ui, server), port = 1234)
+# Run the app
+shinyApp(ui = ui, server = server)
