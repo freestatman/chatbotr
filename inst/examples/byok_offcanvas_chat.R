@@ -111,7 +111,6 @@ ui <- page_fluid(
     open_label = "Open Chat",
     open_class = "btn btn-primary",
     open_icon = "comments",
-    chat_ui_fun = shinychat::chat_mod_ui,
     welcome_message = "Hello! Configure your API settings first, then start chatting.",
     header_right = actionButton(
       inputId = "clear_offcanvas",
@@ -165,19 +164,13 @@ server <- function(input, output, session) {
     # Create chat server with configured client
     offcanvas_chat_server(
       id = "chat",
-      chat_server_fun = shinychat::chat_mod_server,
       client = settings$client()
     )
   })
 
   # Clear chat functionality - Use shinychat::chat_clear()
   observeEvent(input$clear_offcanvas, {
-    # The chat ID is namespaced: module ID "chat" + nested chat ID "chat"
-    shinychat::chat_clear(
-      id = "chat-chat",
-      session = session
-    )
-
+    shinychat::chat_clear("chat-chat-chat")
     showNotification(
       "Conversation cleared!",
       type = "message",
