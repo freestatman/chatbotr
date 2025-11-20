@@ -4,12 +4,10 @@
 \alias{floating_chat_server}
 \title{Floating Chat Server Module}
 \usage{
-floating_chat_server(id, chat_server_fun, ...)
+floating_chat_server(id, client, ...)
 }
 \arguments{
 \item{id}{Namespace ID matching the UI module}
-
-\item{chat_server_fun}{Server function for the chat module, typically from shinychat}
 
 \item{...}{Additional arguments passed to chat_server_fun (e.g., client, system_prompt)}
 }
@@ -28,7 +26,6 @@ server <- function(input, output, session) {
   
   floating_chat_server(
     id = "floating_chat",
-    chat_server_fun = shinychat::chat_mod_server,
     client = github
   )
 }

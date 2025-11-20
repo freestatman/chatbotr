@@ -4,12 +4,10 @@
 \alias{offcanvas_chat_server}
 \title{Offcanvas Chat Server Module}
 \usage{
-offcanvas_chat_server(id, chat_server_fun, ...)
+offcanvas_chat_server(id, ...)
 }
 \arguments{
 \item{id}{Namespace ID matching the UI module}
-
-\item{chat_server_fun}{Server function for the chat module, typically from shinychat}
 
 \item{...}{Additional arguments passed to chat_server_fun (e.g., client, system_prompt)}
 }
@@ -25,10 +23,9 @@ offcanvas namespace.
 \dontrun{
 server <- function(input, output, session) {
   github <- ellmer::chat_github()
-  
+
   offcanvas_chat_server(
     id = "chat",
-    chat_server_fun = shinychat::chat_mod_server,
     client = github
   )
 }
