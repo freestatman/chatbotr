@@ -78,7 +78,7 @@ ui <- page_fluid(
 
   # Floating chat UI with settings and clear button
   floating_chat_ui(
-    id = "my_chat",
+    id = "my_chat1",
     title = "AI Assistant (BYOK)",
     trigger_position = "bottom-right",
     trigger_icon = "robot",
@@ -110,7 +110,6 @@ ui <- page_fluid(
         title = "Clear conversation"
       )
     ),
-    chat_ui_fun = shinychat::chat_mod_ui,
     welcome_message = "Welcome! Please configure your API settings using the gear icon to get started."
   ),
 
@@ -189,8 +188,7 @@ server <- function(input, output, session) {
 
     # Create chat server with configured client
     floating_chat_server(
-      id = "my_chat",
-      chat_server_fun = shinychat::chat_mod_server,
+      id = "my_chat1",
       client = settings$client()
     )
 
@@ -210,8 +208,7 @@ server <- function(input, output, session) {
   observeEvent(input$clear_chat, {
     # The chat ID is namespaced: module ID "my_chat" + nested chat ID "chat"
     shinychat::chat_clear(
-      id = "my_chat-chat",
-      session = session
+      id = "my_chat1-chat-chat"
     )
 
     showNotification(

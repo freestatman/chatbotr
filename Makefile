@@ -10,3 +10,6 @@ app2:
 
 app3:
 	Rscript inst/examples/minimal_floating_chat.R
+
+byok:
+	Rscript inst/examples/byok_floating_chat.R

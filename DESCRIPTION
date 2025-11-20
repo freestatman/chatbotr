@@ -18,7 +18,7 @@ Depends:
 Imports:
     shiny (>= 1.7.0),
     bslib (>= 0.5.0),
-    shinychat,
+    shinychat (>= 0.2.0.9000),
     ellmer
 Suggests:
     testthat (>= 3.0.0),
