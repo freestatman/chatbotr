@@ -1,8 +1,8 @@
 # chatbotr
 
-> Shiny Chatbot Application with Offcanvas Interface
+> Modern AI Chat Interfaces for Shiny Applications
 
-An R package that provides an interactive chatbot interface using Shiny with an offcanvas (slide-out) panel design. Integrates with `shinychat` and `ellmer` for AI-powered conversations.
+An R package that provides elegant, customizable chat interfaces for Shiny applications. Features floating chat widgets and offcanvas panels with full BYOK (Bring Your Own Key) support for multiple LLM providers. Integrates seamlessly with `shinychat` and `ellmer`.
 
 ## Installation
 
@@ -21,23 +21,7 @@ devtools::install()
 
 ## Quick Start
 
-### Running the Application
-
-```r
-library(chatbotr)
-
-# Launch the chatbot app
-run_app()
-
-# Or with custom options
-run_app(port = 3838, launch.browser = FALSE)
-```
-
-### Using the Modules
-
-#### Offcanvas Chat (Edge Panel)
-
-You can use the offcanvas chat modules in your own Shiny applications:
+### Minimal Floating Chat Example
 
 ```r
 library(shiny)
@@ -46,82 +30,81 @@ library(chatbotr)
 
 ui <- page_fluid(
   theme = bs_theme(version = 5),
-  h3("My App with Chatbot"),
-  
-  # Add the offcanvas chat interface
-  offcanvas_chat_ui(
-    id = "assistant",
-    title = "AI Assistant",
-    placement = "end",
-    width = 420,
-    open_label = "Open Chat",
-    open_class = "btn btn-outline-primary",
-    open_icon = "comments",
-    chat_ui_fun = shinychat::chat_mod_ui
-  )
-)
-
-server <- function(input, output, session) {
-  github <- ellmer::chat_github()
-  
-  offcanvas_chat_server(
-    id = "assistant",
-    chat_server_fun = shinychat::chat_mod_server,
-    client = github
-  )
-}
-
-shinyApp(ui, server)
-```
-
-#### Floating Chat (Modern Chatbot Style)
-
-For a modern floating chatbot experience:
-
-```r
-library(shiny)
-library(bslib)
-library(chatbotr)
-
-ui <- page_fluid(
-  theme = bs_theme(version = 5),
-  
-  # Include floating chat CSS
-  tags$head(
-    tags$link(rel = "stylesheet", href = "floating_chat.css")
-  ),
-  
-  h3("My App"),
+  h1("My App"),
   p("Your main content here..."),
   
-  # Add floating chat interface
+  # Add floating chat - just 3 lines!
   floating_chat_ui(
     id = "chat",
-    title = "AI Assistant",
-    trigger_position = "bottom-right",  # or bottom-left, top-right, top-left
-    theme = "light",  # or "dark"
-    chat_ui_fun = shinychat::chat_ui
+    welcome_message = "Hi! How can I help you today?"
   )
 )
 
 server <- function(input, output, session) {
-  client <- ellmer::chat_github(
-    system_prompt = "You are a helpful assistant."
-  )
-  
+  # Connect to LLM provider
   floating_chat_server(
     id = "chat",
-    chat_server_fun = shinychat::chat_server,
-    client = client
+    client = ellmer::chat_github(model = "gpt-4-mini")  # Free tier via GitHub Models
   )
 }
 
 shinyApp(ui, server)
 ```
 
-**Quick Start Guides:**
-- Floating Chat: See `inst/www/FLOATING_CHAT_QUICKSTART.md`
-- Full Demo: Run `inst/examples/floating_chat_demo.R`
+### BYOK (Bring Your Own Key) Example
+
+For production apps with user-provided API keys:
+
+```r
+library(shiny)
+library(bslib)
+library(chatbotr)
+
+ui <- page_fluid(
+  theme = bs_theme(version = 5),
+  
+  # Settings modal for API key configuration
+  api_settings_ui("settings"),
+  
+  # Floating chat with settings button
+  floating_chat_ui(
+    id = "chat",
+    header_actions = actionButton("open_settings", icon("gear"))
+  )
+)
+
+server <- function(input, output, session) {
+  # Configure API settings
+  settings <- api_settings_server(
+    id = "settings",
+    default_system_prompt = "You are a helpful assistant."
+  )
+  
+  # Initialize chat when settings are configured
+  observe({
+    req(settings$is_configured())
+    floating_chat_server(
+      id = "chat",
+      client = settings$client()
+    )
+  })
+}
+
+shinyApp(ui, server)
+```
+
+### Running Example Apps
+
+```r
+# Minimal floating chat demo
+source(system.file("examples/floating_chat_demo.R", package = "chatbotr"))
+
+# BYOK with floating chat
+source(system.file("examples/byok_floating_chat.R", package = "chatbotr"))
+
+# Offcanvas (side panel) chat
+source(system.file("examples/offcanvas_chat_demo.R", package = "chatbotr"))
+```
 
 ## Features
 
@@ -151,23 +134,31 @@ shinyApp(ui, server)
 
 ```
 chatbotr/
-├── DESCRIPTION           # Package metadata
-├── NAMESPACE            # Exported functions
-├── LICENSE              # MIT License
-├── README.md            # This file
-├── R/                   # R source code
-│   ├── offcanvas_chat_module.R  # Main module functions
-│   └── run_app.R        # App launcher
-├── inst/                # Installed files
-│   ├── app.R           # Example application
-│   └── www/            # Web assets
-│       └── custom.css  # Custom styles
-├── tests/              # Unit tests
-│   ├── testthat.R
+├── DESCRIPTION                      # Package metadata
+├── NAMESPACE                        # Exported functions
+├── LICENSE                          # MIT License
+├── README.md                        # This file
+├── R/                               # R source code
+│   ├── floating_chat_module.R       # Floating chat UI/server
+│   ├── offcanvas_chat_module.R      # Offcanvas chat UI/server
+│   ├── settings_module.R            # API settings (BYOK)
+├── inst/                            # Installed files
+│   ├── examples/                    # Demo applications
+│   │   ├── floating_chat_demo.R     # Minimal floating chat
+│   │   ├── byok_floating_chat.R     # BYOK implementation
+│   │   ├── offcanvas_chat_demo.R    # Offcanvas demo
+│   │   └── byok_offcanvas_chat.R    # BYOK + offcanvas
+│   └── www/                         # Documentation & assets
+│       ├── BYOK_GUIDE.md            # BYOK implementation guide
+│       ├── FLOATING_CHAT_QUICKSTART.md
+│       └── floating_chat.css        # Floating chat styles
+├── tests/                           # Unit tests
 │   └── testthat/
-│       └── test-run_app.R
-├── data/               # Example data
-└── dev/                # Development scripts
+│       ├── test-floating_chat.R
+│       └── test-settings_module.R
+├── man/                             # Generated documentation
+├── memory-bank/                     # Project documentation
+└── dev/                             # Development scripts
 ```
 
 ## Development
@@ -187,9 +178,6 @@ devtools::load_all()
 ```r
 # Run all tests
 devtools::test()
-
-# Or specific test file
-testthat::test_file("tests/testthat/test-run_app.R")
 ```
 
 ### Building Documentation
@@ -197,158 +185,254 @@ testthat::test_file("tests/testthat/test-run_app.R")
 ```r
 # Generate documentation from roxygen comments
 devtools::document()
-
-# Build README
-devtools::build_readme()
-```
-
-### Installing Package Locally
-
-```r
-# Install from source
-devtools::install()
-
-# Or build and install
-devtools::build()
-devtools::install_local("chatbotr_0.1.0.tar.gz")
 ```
 
 ## API Reference
 
-### Offcanvas Chat Module
+### Floating Chat Module (Primary)
 
-#### `offcanvas_chat_ui()`
+#### `floating_chat_ui(id, ...)`
 
-Create the UI for an offcanvas chat interface.
+Creates a modern floating chat interface with a trigger button and overlay panel.
+
+**Key Parameters:**
+- `id` - Namespace ID for the module (required)
+- `title` - Header title (default: "Chat Assistant")
+- `trigger_position` - Corner placement: "bottom-right" (default), "bottom-left", "top-right", "top-left"
+- `trigger_icon` - FontAwesome icon name (default: "comments")
+- `trigger_size` - Button size in pixels (default: 60)
+- `panel_width` - Panel width in pixels (default: 400)
+- `panel_height` - Panel height in pixels (default: 600)
+- `theme` - Color theme: "light" (default) or "dark"
+- `welcome_message` - Initial greeting message (optional)
+- `enable_minimize` - Show minimize button (default: TRUE)
+- `enable_maximize` - Show maximize button (default: TRUE)
+- `header_actions` - Custom UI elements for header (e.g., settings, clear buttons)
+- `chat_ui_args` - Additional arguments passed to shinychat
+
+**Example:**
+```r
+floating_chat_ui(
+  id = "assistant",
+  title = "AI Helper",
+  trigger_position = "bottom-right",
+  panel_width = 450,
+  theme = "light",
+  welcome_message = "👋 How can I help?",
+  header_actions = actionButton("clear", icon("trash"))
+)
+```
+
+#### `floating_chat_server(id, client)`
+
+Server logic for the floating chat module.
 
 **Parameters:**
-- `id` - Namespace ID for the module
-- `title` - Title displayed in the offcanvas header
-- `placement` - Position: "end", "start", "bottom", or "top"
-- `width` - Width in pixels (for side placement)
-- `open_label` - Text for the open button
-- `open_class` - CSS classes for the open button
-- `open_icon` - Icon name for the open button
-- `chat_ui_fun` - Function to generate the chat UI
-- `chat_ui_args` - List of arguments passed to `chat_ui_fun`
-- `header_right` - Optional UI elements for header right side
+- `id` - Namespace ID matching the UI (required)
+- `client` - ellmer chat client (reactive or static)
 
-#### `offcanvas_chat_server()`
+**Returns:** Chat server object from shinychat
+
+**Example:**
+```r
+floating_chat_server(
+  id = "assistant",
+  client = ellmer::chat_github(
+    system_prompt = "You are a helpful assistant."
+  )
+)
+```
+
+### API Settings Module (BYOK)
+
+#### `api_settings_ui(id, ...)`
+
+Creates a UI for configuring LLM provider API keys and model selection.
+
+**Parameters:**
+- `id` - Namespace ID for the module (required)
+- `default_provider` - Initial provider: "github" (default), "openai", "anthropic", "google", "azure", "ollama"
+- `show_advanced` - Show advanced settings like temperature (default: FALSE)
+- `inline` - Display inline vs in modal (default: FALSE)
+
+**Example:**
+```r
+api_settings_ui(
+  id = "settings",
+  default_provider = "github",
+  show_advanced = TRUE
+)
+```
+
+#### `api_settings_server(id, ...)`
+
+Server logic for API settings configuration.
+
+**Parameters:**
+- `id` - Namespace ID matching the UI (required)
+- `default_system_prompt` - Default system prompt for the LLM
+
+**Returns:** Reactive list with:
+- `$client()` - Configured ellmer client
+- `$provider()` - Selected provider name
+- `$model()` - Selected model name
+- `$is_configured()` - Boolean indicating if settings are complete
+
+**Example:**
+```r
+settings <- api_settings_server(
+  id = "settings",
+  default_system_prompt = "You are a helpful data analyst."
+)
+
+# Use in chat module
+observe({
+  req(settings$is_configured())
+  floating_chat_server("chat", client = settings$client())
+})
+```
+
+### Offcanvas Chat Module (Alternative Layout)
+
+#### `offcanvas_chat_ui(id, ...)`
+
+Creates a slide-out panel chat interface (edge-anchored).
+
+**Key Parameters:**
+- `id` - Namespace ID for the module (required)
+- `title` - Panel header title
+- `placement` - Edge position: "end" (right), "start" (left), "top", "bottom"
+- `width` - Panel width in pixels (for side placement)
+- `open_label` - Text for trigger button
+- `open_icon` - Icon for trigger button
+- `header_actions` - Custom UI elements for header
+
+#### `offcanvas_chat_server(id, client)`
 
 Server logic for the offcanvas chat module.
 
 **Parameters:**
 - `id` - Namespace ID matching the UI
-- `chat_server_fun` - Server function for the chat module
-- `...` - Additional arguments passed to `chat_server_fun`
+- `client` - ellmer chat client
 
-### Floating Chat Module
-
-#### `floating_chat_ui()`
-
-Create a floating chat interface with customizable trigger and overlay panel.
-
-**Parameters:**
-- `id` - Namespace ID for the module
-- `title` - Title displayed in the chat panel header (default: "Chat Assistant")
-- `trigger_position` - Position: "bottom-right", "bottom-left", "top-right", "top-left"
-- `trigger_icon` - Icon name for trigger button (default: "comments")
-- `trigger_size` - Size of trigger button in pixels (default: 60)
-- `panel_width` - Width of chat panel in pixels (default: 400)
-- `panel_height` - Height of chat panel in pixels (default: 600)
-- `panel_offset` - Offset from viewport edges in pixels (default: 20)
-- `theme` - Color theme: "light" or "dark" (default: "light")
-- `enable_minimize` - Enable minimize functionality (default: TRUE)
-- `chat_ui_fun` - Function to generate the chat UI
-- `chat_ui_args` - List of arguments passed to `chat_ui_fun`
-- `header_actions` - Optional UI elements for header actions
-
-#### `floating_chat_server()`
-
-Server logic for the floating chat module.
-
-**Parameters:**
-- `id` - Namespace ID matching the UI
-- `chat_server_fun` - Server function for the chat module
-- `...` - Additional arguments passed to `chat_server_fun`
-
-### App Launcher
-
-#### `run_app()`
-
-Launch the chatbot Shiny application.
-
-**Parameters:**
-- `...` - Additional arguments passed to `shiny::runApp()`
-- `launch.browser` - Logical; open browser automatically (default: `TRUE`)
-- `port` - TCP port number (default: random)
-- `host` - IPv4 address to listen on (default: "127.0.0.1")
+### Utilities
 
 ## BYOK (Bring Your Own Key)
 
-The chatbotr package now supports **Bring Your Own Key (BYOK)** functionality, giving you complete control over your AI provider and model selection.
+Give users full control over their LLM provider and API keys with the built-in settings module.
 
 ### Supported Providers
 
-- **GitHub Models** - GPT-4o, Llama, Phi-3.5, Mistral
-- **OpenAI** - GPT-4, GPT-3.5, o1
-- **Anthropic** - Claude 3.5 Sonnet, Claude 3 Opus
-- **Google Gemini** - Gemini 1.5 Pro/Flash
-- **Azure OpenAI** - Enterprise deployments
-- **Ollama** - Local LLM inference
+| Provider | Models | API Key Source |
+|----------|--------|----------------|
+| **GitHub Models** | GPT-4o, GPT-4o-mini, Llama 3, Phi-3.5, Mistral | GitHub Personal Access Token |
+| **OpenAI** | GPT-4, GPT-4-turbo, GPT-3.5-turbo, o1 | OpenAI API Key |
+| **Anthropic** | Claude 3.5 Sonnet, Claude 3 Opus/Haiku | Anthropic API Key |
+| **Google Gemini** | Gemini 1.5 Pro/Flash | Google AI API Key |
+| **Azure OpenAI** | GPT-4, GPT-3.5 (custom deployments) | Azure Endpoint + Key |
+| **Ollama** | Any local model | Local instance (no key) |
 
-### Quick Example
+### Implementation Patterns
+
+#### Pattern 1: Settings Module (Recommended)
+
+Complete BYOK implementation with UI:
 
 ```r
-library(shiny)
-library(bslib)
-library(chatbotr)
-
 ui <- page_fluid(
-  # Settings UI
-  api_settings_ui("settings"),
-  
-  # Chat interface
+  # Settings button in chat header
   floating_chat_ui(
     id = "chat",
-    chat_ui_fun = shinychat::chat_mod_ui
+    header_actions = actionButton(
+      "settings_btn", 
+      icon("gear"),
+      `data-bs-toggle` = "modal",
+      `data-bs-target` = "#settingsModal"
+    )
+  ),
+  
+  # Settings modal
+  tags$div(
+    # class = "modal fade",
+    id = "settingsModal",
+    api_settings_ui("settings")
   )
 )
 
 server <- function(input, output, session) {
-  # Configure API settings
   settings <- api_settings_server("settings")
   
-  # Initialize chat when configured
   observe({
     req(settings$is_configured())
-    floating_chat_server(
-      "chat",
-      chat_server_fun = shinychat::chat_mod_server,
-      client = settings$client()
-    )
+    floating_chat_server("chat", client = settings$client())
   })
 }
 
 shinyApp(ui, server)
 ```
 
-### Documentation
+#### Pattern 2: Environment Variables
 
-For comprehensive BYOK documentation, see:
-- [BYOK Guide](inst/www/BYOK_GUIDE.md) - Complete guide with examples
-- [Floating Chat Example](inst/examples/byok_floating_chat.R) - Working example
-- [Offcanvas Chat Example](inst/examples/byok_offcanvas_chat.R) - Alternative pattern
-
-Run examples:
+Simple BYOK for trusted environments:
 
 ```r
-# Floating chat with BYOK
-source(system.file("examples/byok_floating_chat.R", package = "chatbotr"))
+# Set in .Renviron or environment
+Sys.setenv(OPENAI_API_KEY = "sk-...")
 
-# Offcanvas chat with BYOK
-source(system.file("examples/byok_offcanvas_chat.R", package = "chatbotr"))
+# Client auto-detects from environment
+server <- function(input, output, session) {
+  floating_chat_server(
+    "chat",
+    client = ellmer::chat_openai()  # Uses OPENAI_API_KEY
+  )
+}
 ```
+
+#### Pattern 3: Dynamic Provider Selection
+
+User chooses provider without API key input:
+
+```r
+ui <- page_fluid(
+  selectInput("provider", "Provider", c("GitHub", "OpenAI", "Claude")),
+  floating_chat_ui("chat")
+)
+
+server <- function(input, output, session) {
+  client <- reactive({
+    switch(input$provider,
+      "GitHub" = ellmer::chat_github(),
+      "OpenAI" = ellmer::chat_openai(),
+      "Claude" = ellmer::chat_claude()
+    )
+  })
+  
+  observe({
+    req(client())
+    floating_chat_server("chat", client = client())
+  })
+}
+
+shinyApp(ui, server)
+```
+
+### Example Apps
+
+Run complete BYOK examples:
+
+```r
+# Full BYOK with settings UI
+shiny::runApp(system.file("examples/byok_floating_chat.R", package = "chatbotr"))
+
+# Offcanvas variant
+shiny::runApp(system.file("examples/byok_offcanvas_chat.R", package = "chatbotr"))
+```
+
+### Documentation
+
+- [BYOK Implementation Guide](inst/www/BYOK_GUIDE.md)
+- [Floating Chat Quickstart](inst/www/FLOATING_CHAT_QUICKSTART.md)
+- [API Settings Reference](man/api_settings_ui.Rd)
 
 ## Dependencies
 
