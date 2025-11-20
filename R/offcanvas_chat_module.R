@@ -12,8 +12,7 @@
 #' @param open_label Text label for the button that opens the chat (default: "Chat")
 #' @param open_class CSS classes for the open button (default: "btn btn-primary")
 #' @param open_icon Optional icon name for the open button (e.g., "comments")
-#' @param chat_ui_fun Function that generates the chat UI, typically from shinychat
-#' @param chat_ui_args Named list of additional arguments passed to chat_ui_fun
+#' @param chat_ui_args Named list of additional arguments passed to shinychat::chat_mod_ui
 #' @param welcome_message Optional welcome message to display when chat is first opened.
 #'   If provided, this will be passed to the chat UI function via chat_ui_args.
 #' @param header_right Optional UI elements to display in the header's right side
@@ -34,7 +33,6 @@
 #'     id = "chat",
 #'     title = "Assistant",
 #'     placement = "end",
-#'     chat_ui_fun = shinychat::chat_mod_ui,
 #'     welcome_message = "Welcome! How can I assist you?"
 #'   )
 #' )
@@ -47,12 +45,10 @@ offcanvas_chat_ui <- function(
   open_label = "Chat",
   open_class = "btn btn-primary",
   open_icon = NULL,
-  chat_ui_fun,
   chat_ui_args = list(),
   welcome_message = NULL,
   header_right = NULL
 ) {
-  stopifnot(is.function(chat_ui_fun))
   placement <- match.arg(placement)
   ns <- shiny::NS(id)
   
@@ -98,7 +94,7 @@ offcanvas_chat_ui <- function(
 
   # Chat UI content goes into the body
   chat_ui <- do.call(
-    chat_ui_fun,
+    shinychat::chat_mod_ui,
     c(list(id = ns("chat")), chat_ui_args)
   )
 
@@ -138,7 +134,6 @@ offcanvas_chat_ui <- function(
 #' offcanvas namespace.
 #'
 #' @param id Namespace ID matching the UI module
-#' @param chat_server_fun Server function for the chat module, typically from shinychat
 #' @param ... Additional arguments passed to chat_server_fun (e.g., client, system_prompt)
 #'
 #' @return Returns the result of the chat server function
@@ -150,34 +145,18 @@ offcanvas_chat_ui <- function(
 #' \dontrun{
 #' server <- function(input, output, session) {
 #'   github <- ellmer::chat_github()
-#'   
+#'
 #'   offcanvas_chat_server(
 #'     id = "chat",
-#'     chat_server_fun = shinychat::chat_mod_server,
 #'     client = github
 #'   )
 #' }
 #' }
 offcanvas_chat_server <- function(
     id,
-    chat_server_fun,
-    client,
     ...) {
-  stopifnot(is.function(chat_server_fun))
-  # welcome <- ellmer::Turn(role = "user", contents = list(ellmer::ContentText("Hello, world!")))
-  # client$set_turns(list(welcome))
-
   shiny::moduleServer(id, function(input, output, session) {
-    client$set_turns(list(
-      ellmer::Turn(
-        role = "user",
-        contents = list(
-          ellmer::ContentText("Give me a short poem about R programming.")
-        )
-      )
-    ))
-    # If the underlying chat server is also a module, pass the child id
-    chat_server_fun("chat", client, ...)
+    shinychat::chat_mod_server("chat", ...)
   })
 }
 

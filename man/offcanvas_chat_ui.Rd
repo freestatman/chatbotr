@@ -12,8 +12,8 @@ offcanvas_chat_ui(
   open_label = "Chat",
   open_class = "btn btn-primary",
   open_icon = NULL,
-  chat_ui_fun,
   chat_ui_args = list(),
+  welcome_message = NULL,
   header_right = NULL
 )
 }
@@ -33,9 +33,10 @@ offcanvas_chat_ui(
 
 \item{open_icon}{Optional icon name for the open button (e.g., "comments")}
 
-\item{chat_ui_fun}{Function that generates the chat UI, typically from shinychat}
+\item{chat_ui_args}{Named list of additional arguments passed to shinychat::chat_mod_ui}
 
-\item{chat_ui_args}{Named list of additional arguments passed to chat_ui_fun}
+\item{welcome_message}{Optional welcome message to display when chat is first opened.
+If provided, this will be passed to the chat UI function via chat_ui_args.}
 
 \item{header_right}{Optional UI elements to display in the header's right side}
 }
@@ -58,7 +59,7 @@ ui <- page_fluid(
     id = "chat",
     title = "Assistant",
     placement = "end",
-    chat_ui_fun = shinychat::chat_mod_ui
+    welcome_message = "Welcome! How can I assist you?"
   )
 )
 }

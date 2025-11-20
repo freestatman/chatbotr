@@ -35,7 +35,7 @@ test_that("byok_floating_chat app structure is correct", {
 
   # Check for clear button handler with correct pattern
   expect_true(grepl("shinychat::chat_clear", app_text))
-  expect_true(grepl("my_chat-chat", app_text))
+  expect_true(grepl("my_chat1-chat-chat", app_text))
 
   # Check settings modal exists
   expect_true(grepl("settingsModal", app_text))
@@ -54,7 +54,7 @@ test_that("clear button uses correct shinychat pattern", {
   expect_false(grepl("chat_instance\\(\\)\\$clear\\(\\)", app_text))
 
   # Verify correct namespaced ID
-  expect_true(grepl('"my_chat-chat"', app_text))
+  expect_true(grepl('"my_chat1-chat-chat"', app_text))
 })
 
 # Interactive tests (require chromote)
