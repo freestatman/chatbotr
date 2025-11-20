@@ -39,8 +39,6 @@ ui <- page_fluid(
     open_label = "Open chat",
     open_class = "btn btn-outline-primary",
     open_icon = "comments",
-    # Plug in shinychat's UI function here:
-    chat_ui_fun = shinychat::chat_mod_ui,
     welcome_message = "Hi! I'm here to help. Ask me anything!"
     # If you need to pass additional args to shinychat's UI:
     # chat_ui_args = list(placeholder = "Type your message...")
@@ -52,7 +50,6 @@ server <- function(input, output, session) {
   # Plug in shinychat's server module here:
   offcanvas_chat_server(
     id = "assist",
-    chat_server_fun = shinychat::chat_mod_server,
     client = github
     # Pass through additional config args required by shin
     # , system_prompt = "You are a helpful assistant."
