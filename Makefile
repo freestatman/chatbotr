@@ -9,10 +9,10 @@ PORT_BYOK1=3841
 DEFAULT_PORT=$(PORT_APP2)
 
 # Browser-sync proxy ports (Shiny port + 1000)
-BS_PORT_APP1=8838
-BS_PORT_APP2=8839
-BS_PORT_BYOK=8840
-BS_PORT_BYOK1=8841
+BS_PORT_APP1=4838
+BS_PORT_APP2=4839
+BS_PORT_BYOK=4840
+BS_PORT_BYOK1=4841
 BS_DEFAULT_PORT=$(BS_PORT_APP2)
 
 # Source files to watch for changes
@@ -166,17 +166,20 @@ dev-app2:
 	@echo "Press Ctrl+C to stop"
 	@echo ""
 	@trap 'pkill -P $$$$; exit' INT TERM EXIT; \
+	Rscript -e "options(shiny.port = $(PORT_APP2)); shiny::runApp('inst/examples/floating_chat_demo.R', launch.browser = FALSE)" & \
+	SHINY_PID=$$!; \
+	sleep 4; \
 	browser-sync start --proxy "localhost:$(PORT_APP2)" --port $(BS_PORT_APP2) --no-open --no-notify & \
 	BS_PID=$$!; \
 	sleep 2; \
-	while true; do \
-		Rscript -e "options(shiny.port = $(PORT_APP2)); shiny::runApp('inst/examples/floating_chat_demo.R', launch.browser = FALSE)" & \
-		SHINY_PID=$$!; \
-		inotifywait -q -e modify,create,delete $(R_FILES) $(CSS_FILES) inst/examples/floating_chat_demo.R; \
+	while inotifywait -q -e modify,create,delete $(R_FILES) $(CSS_FILES) inst/examples/floating_chat_demo.R; do \
 		echo "Change detected, restarting Shiny app..."; \
 		kill $$SHINY_PID 2>/dev/null || true; \
 		pkill -P $$SHINY_PID 2>/dev/null || true; \
 		sleep 2; \
+		Rscript -e "options(shiny.port = $(PORT_APP2)); shiny::runApp('inst/examples/floating_chat_demo.R', launch.browser = FALSE)" & \
+		SHINY_PID=$$!; \
+		sleep 3; \
 	done
 
 dev-byok:
