@@ -8,6 +8,7 @@ library(bslib)
 library(shinychat)
 library(ellmer)
 library(chatbotr)
+pkgload::load_all()
 
 # UI
 ui <- page_fluid(
@@ -45,8 +46,8 @@ ui <- page_fluid(
     trigger_position = "bottom-right",
     trigger_icon = "robot",
     trigger_size = 60,
-    panel_width = 600,
-    panel_height = 800,
+    panel_width = "40vw",
+    panel_height = "85vh",
     theme = "light",
     enable_minimize = TRUE,
     enable_maximize = TRUE,

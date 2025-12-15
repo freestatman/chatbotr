@@ -9,6 +9,7 @@ library(shinyjs)
 library(shinychat)
 library(ellmer)
 library(chatbotr)
+pkgload::load_all()
 
 # UI
 ui <- page_fluid(
