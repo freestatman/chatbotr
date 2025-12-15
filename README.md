@@ -97,13 +97,13 @@ shinyApp(ui, server)
 
 ```r
 # Minimal floating chat demo
-source(system.file("examples/floating_chat_demo.R", package = "chatbotr"))
+shiny::runApp(system.file("examples/floating_chat_demo.R", package = "chatbotr"))
 
 # BYOK with floating chat
-source(system.file("examples/byok_floating_chat.R", package = "chatbotr"))
+shiny::runApp(system.file("examples/byok_floating_chat.R", package = "chatbotr"))
 
 # Offcanvas (side panel) chat
-source(system.file("examples/offcanvas_chat_demo.R", package = "chatbotr"))
+shiny::runApp(system.file("examples/offcanvas_chat_demo.R", package = "chatbotr"))
 ```
 
 ## Features
