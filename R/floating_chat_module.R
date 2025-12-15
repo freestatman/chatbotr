@@ -76,6 +76,18 @@ floating_chat_ui <- function(
   position_parts <- strsplit(trigger_position, "-")[[1]]
   vertical <- position_parts[1]   # top or bottom
   horizontal <- position_parts[2] # left or right
+
+  # Format dimensions (handle both px and viewport units)
+  format_dimension <- function(dim) {
+    if (is.numeric(dim)) {
+      paste0(dim, "px")
+    } else {
+      dim
+    }
+  }
+  
+  panel_width_css <- format_dimension(panel_width)
+  panel_height_css <- format_dimension(panel_height)
   
   # Trigger button positioning with enhanced styling
   trigger_style <- paste0(
@@ -102,8 +114,8 @@ floating_chat_ui <- function(
     "z-index: 1050; ",
     vertical, ": ", panel_offset, "px; ",
     horizontal, ": ", panel_offset, "px; ",
-    "width: ", panel_width, "px; ",
-    "height: ", panel_height, "px; ",
+    "width: ", panel_width_css, "; ",
+    "height: ", panel_height_css, "; ",
     "display: none; ",
     "background: ", bg_color, " !important; ",
     "border-radius: 0.75rem; ",
@@ -222,8 +234,8 @@ floating_chat_ui <- function(
     style = panel_style,
     `data-minimized` = "false",
     `data-maximized` = "false",
-    `data-original-width` = panel_width,
-    `data-original-height` = panel_height,
+    `data-original-width` = panel_width_css,
+    `data-original-height` = panel_height_css,
     `data-original-position` = trigger_position,
     `role` = "dialog",
     `aria-label` = "Chat assistant dialog",
@@ -300,7 +312,7 @@ floating_chat_ui <- function(
           minimizeBtn.addEventListener("click", function() {
             const isMinimized = panel.getAttribute("data-minimized") === "true";
             if (isMinimized) {
-              panel.style.height = "%spx";
+              panel.style.height = "%s";
               panel.setAttribute("data-minimized", "false");
               minimizeBtn.innerHTML = \'<i class="fa fa-minus"></i>\';
               minimizeBtn.setAttribute("aria-label", "Minimize chat");
@@ -329,8 +341,8 @@ floating_chat_ui <- function(
               const vert = parts[0];
               const horiz = parts[1];
               
-              panel.style.width = originalWidth + "px";
-              panel.style.height = originalHeight + "px";
+              panel.style.width = originalWidth;
+              panel.style.height = originalHeight;
               panel.style.top = vert === "top" ? "%spx" : "auto";
               panel.style.bottom = vert === "bottom" ? "%spx" : "auto";
               panel.style.left = horiz === "left" ? "%spx" : "auto";

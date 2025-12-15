@@ -3,6 +3,7 @@ library(bslib)
 library(ellmer)
 library(shinychat)
 library(chatbotr)
+pkgload::load_all()
 
 ui <- page_fluid(
   theme = bs_theme(version = 5), # ensure Bootstrap 5
