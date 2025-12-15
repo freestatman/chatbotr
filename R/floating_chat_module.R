@@ -77,10 +77,10 @@ floating_chat_ui <- function(
   vertical <- position_parts[1]   # top or bottom
   horizontal <- position_parts[2] # left or right
   
-  # Trigger button positioning
+  # Trigger button positioning with enhanced styling
   trigger_style <- paste0(
     "position: fixed; ",
-    "z-index: 1040; ",
+    "z-index: 1046; ",
     vertical, ": ", panel_offset, "px; ",
     horizontal, ": ", panel_offset, "px; ",
     "width: ", trigger_size, "px; ",
@@ -90,12 +90,13 @@ floating_chat_ui <- function(
     "align-items: center; ",
     "justify-content: center; ",
     "cursor: pointer; ",
-    "transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); ",
-    "box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); "
+    "transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); ",
+    "box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); ",
+    "user-select: none; "
   )
   
-  # Panel positioning based on trigger location
-  bg_color <- if (theme == "dark") "#1e293b" else "#ffffff"
+  # Panel positioning based on trigger location with enhanced styling
+  bg_color <- if (theme == "dark") "#09090b" else "#ffffff"
   panel_style <- paste0(
     "position: fixed; ",
     "z-index: 1050; ",
@@ -105,10 +106,10 @@ floating_chat_ui <- function(
     "height: ", panel_height, "px; ",
     "display: none; ",
     "background: ", bg_color, " !important; ",
-    "border-radius: 12px; ",
+    "border-radius: 0.75rem; ",
     "overflow: hidden; ",
-    "transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); ",
-    "box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2); "
+    "transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); ",
+    "box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); "
   )
   
   # Overlay for closing chat when clicking outside
@@ -118,10 +119,10 @@ floating_chat_ui <- function(
     "left: 0; ",
     "width: 100%; ",
     "height: 100%; ",
-    "background: rgba(0, 0, 0, 0.3); ",
+    "background: rgba(0, 0, 0, 0.4); ",
     "z-index: 1045; ",
     "display: none; ",
-    "transition: opacity 0.3s ease; "
+    "transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); "
   )
   
   # Theme classes
@@ -133,18 +134,22 @@ floating_chat_ui <- function(
     class = paste("floating-chat-trigger", theme_class),
     style = trigger_style,
     `data-chat-id` = panel_id,
+    `role` = "button",
+    `aria-label` = "Open chat assistant",
+    `tabindex` = "0",
     shiny::tags$i(
       class = paste("fa fa-", trigger_icon, sep = ""),
-      style = "font-size: 28px;"
+      style = "font-size: 1.75rem;",
+      `aria-hidden` = "true"
     )
   )
   
-  # Chat panel header
+  # Chat panel header with improved styling
   minimize_btn <- if (enable_minimize) {
     shiny::tags$button(
       class = "btn btn-sm btn-ghost floating-chat-minimize",
       type = "button",
-      style = "padding: 4px 8px;",
+      `aria-label` = "Minimize chat",
       shiny::icon("minus")
     )
   } else {
@@ -155,7 +160,7 @@ floating_chat_ui <- function(
     shiny::tags$button(
       class = "btn btn-sm btn-ghost floating-chat-maximize",
       type = "button",
-      style = "padding: 4px 8px;",
+      `aria-label` = "Maximize chat",
       shiny::icon("expand")
     )
   } else {
@@ -165,26 +170,27 @@ floating_chat_ui <- function(
   header <- shiny::tags$div(
     class = "floating-chat-header",
     style = paste0(
-      "padding: 16px 20px; ",
+      "padding: 1rem 1.25rem; ",
       "border-bottom: 1px solid; ",
       "display: flex; ",
       "align-items: center; ",
       "justify-content: space-between; ",
-      "background: ", bg_color, " !important; "
+      "background: ", bg_color, " !important; ",
+      "min-height: 3.75rem; "
     ),
     shiny::tags$h5(
-      style = "margin: 0; font-weight: 600;",
+      style = "margin: 0; font-weight: 600; font-size: 0.875rem; letter-spacing: -0.01em;",
       title
     ),
     shiny::tags$div(
-      class = "d-flex gap-2 align-items-center",
+      class = "d-flex gap-1 align-items-center",
       header_actions,
       maximize_btn,
       minimize_btn,
       shiny::tags$button(
         class = "btn btn-sm btn-ghost floating-chat-close",
         type = "button",
-        style = "padding: 4px 8px;",
+        `aria-label` = "Close chat",
         shiny::icon("times")
       )
     )
@@ -196,11 +202,11 @@ floating_chat_ui <- function(
     c(list(id = ns("chat")), chat_ui_args)
   )
   
-  # Chat panel body
+  # Chat panel body with improved styling
   body <- shiny::tags$div(
     class = "floating-chat-body",
     style = paste0(
-      "height: calc(100% - 65px); ",
+      "height: calc(100% - 3.75rem); ",
       "overflow: hidden; ",
       "display: flex; ",
       "flex-direction: column; ",
@@ -209,7 +215,7 @@ floating_chat_ui <- function(
     chat_ui
   )
   
-  # Complete chat panel
+  # Complete chat panel with accessibility attributes
   panel <- shiny::tags$div(
     id = panel_id,
     class = paste("floating-chat-panel", theme_class),
@@ -219,6 +225,9 @@ floating_chat_ui <- function(
     `data-original-width` = panel_width,
     `data-original-height` = panel_height,
     `data-original-position` = trigger_position,
+    `role` = "dialog",
+    `aria-label` = "Chat assistant dialog",
+    `aria-modal` = "true",
     header,
     body
   )
@@ -230,7 +239,7 @@ floating_chat_ui <- function(
     style = overlay_style
   )
   
-  # JavaScript for interactions
+  # JavaScript for interactions with enhanced animations and accessibility
   js_code <- shiny::tags$script(shiny::HTML(sprintf('
     (function() {
       const triggerId = "%s";
@@ -244,19 +253,37 @@ floating_chat_ui <- function(
         
         if (!trigger || !panel || !overlay) return;
         
-        // Open chat
-        trigger.addEventListener("click", function() {
+        // Open chat function
+        function openChat() {
           panel.style.display = "flex";
           panel.style.flexDirection = "column";
           overlay.style.display = "block";
           trigger.style.transform = "scale(0)";
+          trigger.style.opacity = "0";
           
-          // Animate in
+          // Animate in with enhanced easing
           setTimeout(() => {
             panel.style.opacity = "1";
-            panel.style.transform = "scale(1)";
+            panel.style.transform = "scale(1) translateY(0)";
             overlay.style.opacity = "1";
           }, 10);
+          
+          // Focus first input in chat
+          setTimeout(() => {
+            const firstInput = panel.querySelector("textarea, input[type=\\"text\\"]");
+            if (firstInput) firstInput.focus();
+          }, 350);
+        }
+        
+        // Open chat on click
+        trigger.addEventListener("click", openChat);
+        
+        // Open chat on Enter/Space key
+        trigger.addEventListener("keydown", function(e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openChat();
+          }
         });
         
         // Close chat
@@ -276,10 +303,12 @@ floating_chat_ui <- function(
               panel.style.height = "%spx";
               panel.setAttribute("data-minimized", "false");
               minimizeBtn.innerHTML = \'<i class="fa fa-minus"></i>\';
+              minimizeBtn.setAttribute("aria-label", "Minimize chat");
             } else {
-              panel.style.height = "65px";
+              panel.style.height = "3.75rem";
               panel.setAttribute("data-minimized", "true");
               minimizeBtn.innerHTML = \'<i class="fa fa-expand"></i>\';
+              minimizeBtn.setAttribute("aria-label", "Restore chat");
             }
           });
         }
@@ -306,10 +335,11 @@ floating_chat_ui <- function(
               panel.style.bottom = vert === "bottom" ? "%spx" : "auto";
               panel.style.left = horiz === "left" ? "%spx" : "auto";
               panel.style.right = horiz === "right" ? "%spx" : "auto";
-              panel.style.borderRadius = "12px";
+              panel.style.borderRadius = "0.75rem";
               
               panel.setAttribute("data-maximized", "false");
               maximizeBtn.innerHTML = \'<i class="fa fa-expand"></i>\';
+              maximizeBtn.setAttribute("aria-label", "Maximize chat");
             } else {
               // Restore from minimized state if needed
               if (isMinimized) {
@@ -319,6 +349,7 @@ floating_chat_ui <- function(
                 const minBtn = panel.querySelector(".floating-chat-minimize");
                 if (minBtn) {
                   minBtn.innerHTML = \'<i class="fa fa-minus"></i>\';
+                  minBtn.setAttribute("aria-label", "Minimize chat");
                 }
               }
               
@@ -333,6 +364,7 @@ floating_chat_ui <- function(
               
               panel.setAttribute("data-maximized", "true");
               maximizeBtn.innerHTML = \'<i class="fa fa-compress"></i>\';
+              maximizeBtn.setAttribute("aria-label", "Restore chat");
             }
           });
         }
@@ -342,15 +374,24 @@ floating_chat_ui <- function(
           closeChat();
         });
         
+        // Close on Escape key
+        document.addEventListener("keydown", function(e) {
+          if (e.key === "Escape" && panel.style.display === "flex") {
+            closeChat();
+          }
+        });
+        
         function closeChat() {
           panel.style.opacity = "0";
-          panel.style.transform = "scale(0.95)";
+          panel.style.transform = "scale(0.95) translateY(10px)";
           overlay.style.opacity = "0";
           
           setTimeout(() => {
             panel.style.display = "none";
             overlay.style.display = "none";
             trigger.style.transform = "scale(1)";
+            trigger.style.opacity = "1";
+            trigger.focus();
           }, 300);
         }
       }
