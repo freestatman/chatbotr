@@ -87,10 +87,10 @@ api_settings_ui <- function(
       class = "d-flex align-items-center gap-2 mb-2",
       shiny::actionButton(
         inputId = ns("refresh_models"),
-        label = "Refresh Models",
-        class = "btn btn-sm btn-outline-primary",
+        label = "Refresh",
+        class = "btn btn-sm btn-outline-secondary",
         icon = shiny::icon("sync"),
-        style = "font-size: 0.875rem;"
+        style = "font-size: 0.8rem;"
       ),
       shiny::uiOutput(ns("models_status"))
     ),
@@ -98,7 +98,10 @@ api_settings_ui <- function(
     if (show_advanced) {
       shiny::tagList(
         shiny::hr(),
-        shiny::tags$h6("Advanced Settings"),
+        shiny::tags$h6(
+          style = "font-weight: 500; font-size: 0.875rem;",
+          "Advanced Settings"
+        ),
         shiny::sliderInput(
           inputId = ns("temperature"),
           label = "Temperature",
@@ -118,17 +121,17 @@ api_settings_ui <- function(
     },
 
     shiny::tags$div(
-      class = "mt-3",
+      class = "mt-3 d-flex gap-2",
       shiny::actionButton(
         inputId = ns("save_settings"),
-        label = "Save Settings",
-        class = "btn btn-primary",
-        icon = shiny::icon("save")
+        label = "Save",
+        class = "btn btn-dark",
+        icon = shiny::icon("check")
       ),
       shiny::actionButton(
         inputId = ns("test_connection"),
-        label = "Test Connection",
-        class = "btn btn-outline-secondary ms-2",
+        label = "Test",
+        class = "btn btn-outline-secondary",
         icon = shiny::icon("plug")
       )
     ),

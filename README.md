@@ -108,27 +108,31 @@ shiny::runApp(system.file("examples/offcanvas_chat_demo.R", package = "chatbotr"
 
 ## Features
 
+### Design Philosophy: Intentional Minimalism
+
+- **Clean Monochromatic Palette**: Black, white, and grays only
+- **Subtle Interactions**: Quick 150ms transitions, no flashy effects
+- **Typography**: System fonts, medium weights, tight letter-spacing
+- **Accessibility**: ARIA labels, keyboard navigation, focus management
+
 ### Two Chat Interface Styles
 
-#### 1. Offcanvas Chat (Edge Panel)
-- **Edge-Anchored Interface**: Clean slide-out chat panel from screen edges
-- **Flexible Placement**: Position the chat panel on any side (left, right, top, bottom)
-- **Customizable Appearance**: Configure width, buttons, and behavior
-- **Best For**: Side navigation, persistent chat panels, desktop applications
-
-#### 2. Floating Chat (NEW! ✨)
-- **Modern Floating Button**: Discreet circular trigger icon (customizable position)
-- **Overlay Panel**: Beautiful floating chat window that appears on click
-- **shadcn/ui Design**: Modern, clean aesthetic with smooth animations
-- **Minimize Support**: Collapsible panel with minimize/expand functionality
-- **Theme Support**: Built-in light and dark themes
+#### 1. Floating Chat
+- **Floating Trigger Button**: Circular button in any corner
+- **Overlay Panel**: Clean chat window that appears on click
+- **Minimize/Maximize**: Full control with panel sizing
+- **Suggested Prompts**: Clickable chips for quick input
 - **Responsive**: Full-screen on mobile, floating on desktop
-- **Best For**: Chatbot interfaces, customer support, AI assistants
 
-### General Features
-- **Modular Design**: Easy to integrate into existing Shiny applications
-- **AI-Powered**: Works with `shinychat` and `ellmer` for intelligent conversations
-- **Fully Customizable**: Extensive configuration options for both modules
+#### 2. Offcanvas Chat
+- **Edge-Anchored**: Slide-out panel from any screen edge
+- **Flexible Placement**: Left, right, top, or bottom
+- **Configurable Width**: Set panel size as needed
+
+### BYOK (Bring Your Own Key)
+- **Multiple Providers**: GitHub, OpenAI, Anthropic, Google, Azure, Ollama
+- **Settings Modal**: User-configurable API key input
+- **Connection Testing**: Verify settings before use
 
 ## Package Structure
 
@@ -219,6 +223,7 @@ floating_chat_ui(
   panel_width = 450,
   theme = "light",
   welcome_message = "👋 How can I help?",
+  suggested_prompts = c("Explain this data", "Plot the results", "Summarize findings"),
   header_actions = actionButton("clear", icon("trash"))
 )
 ```

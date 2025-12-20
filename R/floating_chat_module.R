@@ -1,22 +1,23 @@
 #' Floating Chat UI Module
 #'
 #' @description
-#' Creates a floating chat interface with a customizable trigger icon and 
+#' Creates a floating chat interface with a customizable trigger icon and
 #' collapsible overlay panel. The chat appears as a modern floating window
 #' on top of the main content, similar to common chatbot interfaces.
 #'
 #' @param id Namespace ID for the module
 #' @param title Title displayed in the chat panel header (default: "Chat Assistant")
-#' @param trigger_position Position of the floating trigger icon: 
+#' @param trigger_position Position of the floating trigger icon:
 #'   "bottom-right", "bottom-left", "top-right", or "top-left" (default: "bottom-right")
 #' @param trigger_icon Icon name for the trigger button (default: "comments")
 #' @param trigger_size Size of the trigger button in pixels (default: 60)
 #' @param panel_width Width of the chat panel in pixels (default: 400)
 #' @param panel_height Height of the chat panel in pixels (default: 600)
 #' @param panel_offset Offset from viewport edges in pixels (default: 20)
-#' @param chat_ui_args Named list of additional arguments passed to shinychat::chat_mod_ui() 
+#' @param chat_ui_args Named list of additional arguments passed to shinychat::chat_mod_ui()
 #' @param welcome_message Optional welcome message to display when chat is first opened.
 #'   If provided, this will be passed to the chat UI function via chat_ui_args.
+#' @param suggested_prompts Optional vector of suggested prompt strings to display as chips.
 #' @param theme Color theme: "light" or "dark" (default: "light")
 #' @param enable_minimize Enable minimize functionality (default: TRUE)
 #' @param enable_maximize Enable maximize functionality (default: TRUE)
@@ -43,25 +44,25 @@
 #' )
 #' }
 floating_chat_ui <- function(
-  id,
-  title = "Chat Assistant",
-  trigger_position = c("bottom-right", "bottom-left", "top-right", "top-left"),
-  trigger_icon = "comments",
-  trigger_size = 60,
-  panel_width = 400,
-  panel_height = 600,
-  panel_offset = 20,
-  chat_ui_args = list(),
-  welcome_message = NULL,
-  theme = c("light", "dark"),
-  enable_minimize = TRUE,
-  enable_maximize = TRUE,
-  header_actions = NULL
-) {
+    id,
+    title = "Chat Assistant",
+    trigger_position = c("bottom-right", "bottom-left", "top-right", "top-left"),
+    trigger_icon = "comments",
+    trigger_size = 60,
+    panel_width = 400,
+    panel_height = 600,
+    panel_offset = 20,
+    chat_ui_args = list(),
+    welcome_message = NULL,
+    suggested_prompts = NULL,
+    theme = c("light", "dark"),
+    enable_minimize = TRUE,
+    enable_maximize = TRUE,
+    header_actions = NULL) {
   trigger_position <- match.arg(trigger_position)
   theme <- match.arg(theme)
   ns <- shiny::NS(id)
-  
+
   # Add welcome_message to chat_ui_args if provided
   if (!is.null(welcome_message)) {
     chat_ui_args$messages <- welcome_message
@@ -71,10 +72,10 @@ floating_chat_ui <- function(
   trigger_id <- ns("trigger")
   panel_id <- ns("panel")
   overlay_id <- ns("overlay")
-  
+
   # Parse position for CSS
   position_parts <- strsplit(trigger_position, "-")[[1]]
-  vertical <- position_parts[1]   # top or bottom
+  vertical <- position_parts[1] # top or bottom
   horizontal <- position_parts[2] # left or right
 
   # Format dimensions (handle both px and viewport units)
@@ -85,11 +86,11 @@ floating_chat_ui <- function(
       dim
     }
   }
-  
+
   panel_width_css <- format_dimension(panel_width)
   panel_height_css <- format_dimension(panel_height)
-  
-  # Trigger button positioning with enhanced styling
+
+  # Trigger button positioning - Intentional Minimalism
   trigger_style <- paste0(
     "position: fixed; ",
     "z-index: 1046; ",
@@ -102,13 +103,14 @@ floating_chat_ui <- function(
     "align-items: center; ",
     "justify-content: center; ",
     "cursor: pointer; ",
-    "transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); ",
-    "box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); ",
+    "transition: all 0.2s ease; ",
+    "box-shadow: 0 4px 12px rgb(0 0 0 / 0.15); ",
     "user-select: none; "
   )
-  
-  # Panel positioning based on trigger location with enhanced styling
-  bg_color <- if (theme == "dark") "#09090b" else "#ffffff"
+
+  # Panel positioning - Clean, minimal styling
+  bg_color <- if (theme == "dark") "#18181b" else "#ffffff"
+  border_color <- if (theme == "dark") "#27272a" else "#e5e5e5"
   panel_style <- paste0(
     "position: fixed; ",
     "z-index: 1050; ",
@@ -117,13 +119,14 @@ floating_chat_ui <- function(
     "width: ", panel_width_css, "; ",
     "height: ", panel_height_css, "; ",
     "display: none; ",
-    "background: ", bg_color, " !important; ",
-    "border-radius: 0.75rem; ",
+    "background: ", bg_color, "; ",
+    "border: 1px solid ", border_color, "; ",
+    "border-radius: 12px; ",
     "overflow: hidden; ",
-    "transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); ",
-    "box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); "
+    "transition: all 0.2s ease; ",
+    "box-shadow: 0 8px 30px rgb(0 0 0 / 0.12); "
   )
-  
+
   # Overlay for closing chat when clicking outside
   overlay_style <- paste0(
     "position: fixed; ",
@@ -131,15 +134,15 @@ floating_chat_ui <- function(
     "left: 0; ",
     "width: 100%; ",
     "height: 100%; ",
-    "background: rgba(0, 0, 0, 0.4); ",
+    "background: rgba(0, 0, 0, 0.3); ",
     "z-index: 1045; ",
     "display: none; ",
-    "transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); "
+    "transition: opacity 0.2s ease; "
   )
-  
+
   # Theme classes
   theme_class <- if (theme == "dark") "floating-chat-dark" else "floating-chat-light"
-  
+
   # Trigger button
   trigger_btn <- shiny::tags$div(
     id = trigger_id,
@@ -151,12 +154,12 @@ floating_chat_ui <- function(
     `tabindex` = "0",
     shiny::tags$i(
       class = paste("fa fa-", trigger_icon, sep = ""),
-      style = "font-size: 1.75rem;",
+      style = "font-size: 1.5rem;",
       `aria-hidden` = "true"
     )
   )
-  
-  # Chat panel header with improved styling
+
+  # Chat panel header - Minimal styling
   minimize_btn <- if (enable_minimize) {
     shiny::tags$button(
       class = "btn btn-sm btn-ghost floating-chat-minimize",
@@ -167,7 +170,7 @@ floating_chat_ui <- function(
   } else {
     NULL
   }
-  
+
   maximize_btn <- if (enable_maximize) {
     shiny::tags$button(
       class = "btn btn-sm btn-ghost floating-chat-maximize",
@@ -178,20 +181,20 @@ floating_chat_ui <- function(
   } else {
     NULL
   }
-  
+
   header <- shiny::tags$div(
     class = "floating-chat-header",
     style = paste0(
-      "padding: 1rem 1.25rem; ",
-      "border-bottom: 1px solid; ",
+      "padding: 0.875rem 1rem; ",
+      "border-bottom: 1px solid ", border_color, "; ",
       "display: flex; ",
       "align-items: center; ",
       "justify-content: space-between; ",
-      "background: ", bg_color, " !important; ",
-      "min-height: 3.75rem; "
+      "background: ", bg_color, "; ",
+      "min-height: 3.5rem; "
     ),
     shiny::tags$h5(
-      style = "margin: 0; font-weight: 600; font-size: 0.875rem; letter-spacing: -0.01em;",
+      style = "margin: 0; font-weight: 500; font-size: 0.9rem;",
       title
     ),
     shiny::tags$div(
@@ -207,26 +210,52 @@ floating_chat_ui <- function(
       )
     )
   )
-  
+
+  # Suggested Prompts Area
+  prompts_ui <- if (!is.null(suggested_prompts) && length(suggested_prompts) > 0) {
+    shiny::tags$div(
+      class = "suggested-prompts",
+      style = paste0(
+        "padding: 0.5rem 0.75rem; ",
+        "overflow-x: auto; ",
+        "white-space: nowrap; ",
+        "display: flex; ",
+        "gap: 0.5rem; ",
+        "border-top: 1px solid ", border_color, "; ",
+        "background: ", bg_color, ";"
+      ),
+      lapply(suggested_prompts, function(prompt) {
+        shiny::tags$button(
+          class = "suggested-prompt-chip",
+          type = "button",
+          prompt
+        )
+      })
+    )
+  } else {
+    NULL
+  }
+
   # Chat UI content
   chat_ui <- do.call(
     shinychat::chat_mod_ui,
     c(list(id = ns("chat")), chat_ui_args)
   )
-  
-  # Chat panel body with improved styling
+
+  # Chat panel body
   body <- shiny::tags$div(
     class = "floating-chat-body",
     style = paste0(
-      "height: calc(100% - 3.75rem); ",
+      "height: calc(100% - 3.5rem); ",
       "overflow: hidden; ",
       "display: flex; ",
       "flex-direction: column; ",
-      "background: ", bg_color, " !important; "
+      "background: ", bg_color, "; "
     ),
-    chat_ui
+    chat_ui,
+    prompts_ui
   )
-  
+
   # Complete chat panel with accessibility attributes
   panel <- shiny::tags$div(
     id = panel_id,
@@ -243,70 +272,61 @@ floating_chat_ui <- function(
     header,
     body
   )
-  
+
   # Overlay
   overlay <- shiny::tags$div(
     id = overlay_id,
     class = "floating-chat-overlay",
     style = overlay_style
   )
-  
-  # JavaScript for interactions with enhanced animations and accessibility
+
+  # Inline JavaScript for interactions (reliable, no async loading issues)
   js_code <- shiny::tags$script(shiny::HTML(sprintf('
     (function() {
       const triggerId = "%s";
       const panelId = "%s";
       const overlayId = "%s";
-      
+
       function initFloatingChat() {
         const trigger = document.getElementById(triggerId);
         const panel = document.getElementById(panelId);
         const overlay = document.getElementById(overlayId);
-        
+
         if (!trigger || !panel || !overlay) return;
-        
-        // Open chat function
+
         function openChat() {
           panel.style.display = "flex";
           panel.style.flexDirection = "column";
           overlay.style.display = "block";
           trigger.style.transform = "scale(0)";
           trigger.style.opacity = "0";
-          
-          // Animate in with enhanced easing
+
           setTimeout(() => {
             panel.style.opacity = "1";
-            panel.style.transform = "scale(1) translateY(0)";
+            panel.style.transform = "scale(1)";
             overlay.style.opacity = "1";
           }, 10);
-          
-          // Focus first input in chat
+
           setTimeout(() => {
             const firstInput = panel.querySelector("textarea, input[type=\\"text\\"]");
             if (firstInput) firstInput.focus();
-          }, 350);
+          }, 300);
         }
-        
-        // Open chat on click
+
         trigger.addEventListener("click", openChat);
-        
-        // Open chat on Enter/Space key
+
         trigger.addEventListener("keydown", function(e) {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             openChat();
           }
         });
-        
-        // Close chat
+
         const closeBtn = panel.querySelector(".floating-chat-close");
         if (closeBtn) {
-          closeBtn.addEventListener("click", function() {
-            closeChat();
-          });
+          closeBtn.addEventListener("click", closeChat);
         }
-        
-        // Minimize chat
+
         const minimizeBtn = panel.querySelector(".floating-chat-minimize");
         if (minimizeBtn) {
           minimizeBtn.addEventListener("click", function() {
@@ -315,57 +335,47 @@ floating_chat_ui <- function(
               panel.style.height = "%s";
               panel.setAttribute("data-minimized", "false");
               minimizeBtn.innerHTML = \'<i class="fa fa-minus"></i>\';
-              minimizeBtn.setAttribute("aria-label", "Minimize chat");
             } else {
-              panel.style.height = "3.75rem";
+              panel.style.height = "3.5rem";
               panel.setAttribute("data-minimized", "true");
               minimizeBtn.innerHTML = \'<i class="fa fa-expand"></i>\';
-              minimizeBtn.setAttribute("aria-label", "Restore chat");
             }
           });
         }
-        
-        // Maximize chat
+
         const maximizeBtn = panel.querySelector(".floating-chat-maximize");
         if (maximizeBtn) {
           maximizeBtn.addEventListener("click", function() {
             const isMaximized = panel.getAttribute("data-maximized") === "true";
             const isMinimized = panel.getAttribute("data-minimized") === "true";
-            
+
             if (isMaximized) {
-              // Restore to original size
               const originalWidth = panel.getAttribute("data-original-width");
               const originalHeight = panel.getAttribute("data-original-height");
               const originalPosition = panel.getAttribute("data-original-position");
               const parts = originalPosition.split("-");
               const vert = parts[0];
               const horiz = parts[1];
-              
+
               panel.style.width = originalWidth;
               panel.style.height = originalHeight;
               panel.style.top = vert === "top" ? "%spx" : "auto";
               panel.style.bottom = vert === "bottom" ? "%spx" : "auto";
               panel.style.left = horiz === "left" ? "%spx" : "auto";
               panel.style.right = horiz === "right" ? "%spx" : "auto";
-              panel.style.borderRadius = "0.75rem";
-              
+              panel.style.borderRadius = "12px";
+
               panel.setAttribute("data-maximized", "false");
               maximizeBtn.innerHTML = \'<i class="fa fa-expand"></i>\';
-              maximizeBtn.setAttribute("aria-label", "Maximize chat");
             } else {
-              // Restore from minimized state if needed
               if (isMinimized) {
                 const originalHeight = panel.getAttribute("data-original-height");
-                panel.style.height = originalHeight + "px";
+                panel.style.height = originalHeight;
                 panel.setAttribute("data-minimized", "false");
                 const minBtn = panel.querySelector(".floating-chat-minimize");
-                if (minBtn) {
-                  minBtn.innerHTML = \'<i class="fa fa-minus"></i>\';
-                  minBtn.setAttribute("aria-label", "Minimize chat");
-                }
+                if (minBtn) minBtn.innerHTML = \'<i class="fa fa-minus"></i>\';
               }
-              
-              // Maximize to full screen
+
               panel.style.top = "0";
               panel.style.bottom = "0";
               panel.style.left = "0";
@@ -373,51 +383,166 @@ floating_chat_ui <- function(
               panel.style.width = "100vw";
               panel.style.height = "100vh";
               panel.style.borderRadius = "0";
-              
+
               panel.setAttribute("data-maximized", "true");
               maximizeBtn.innerHTML = \'<i class="fa fa-compress"></i>\';
-              maximizeBtn.setAttribute("aria-label", "Restore chat");
             }
           });
         }
-        
-        // Close on overlay click
-        overlay.addEventListener("click", function() {
-          closeChat();
-        });
-        
-        // Close on Escape key
+
+        overlay.addEventListener("click", closeChat);
+
         document.addEventListener("keydown", function(e) {
           if (e.key === "Escape" && panel.style.display === "flex") {
             closeChat();
           }
         });
-        
+
         function closeChat() {
           panel.style.opacity = "0";
-          panel.style.transform = "scale(0.95) translateY(10px)";
+          panel.style.transform = "scale(0.95)";
           overlay.style.opacity = "0";
-          
+
           setTimeout(() => {
             panel.style.display = "none";
             overlay.style.display = "none";
             trigger.style.transform = "scale(1)";
             trigger.style.opacity = "1";
             trigger.focus();
-          }, 300);
+          }, 200);
+        }
+
+        // Handle suggested prompt clicks
+        const promptContainer = panel.querySelector(".suggested-prompts");
+        if (promptContainer) {
+          promptContainer.addEventListener("click", function(e) {
+            const chip = e.target.closest(".suggested-prompt-chip");
+            if (chip) {
+              const promptText = chip.innerText;
+              const textArea = panel.querySelector("textarea, input[type=\\"text\\"]");
+              if (textArea) {
+                textArea.value = promptText;
+                textArea.dispatchEvent(new Event("input", { bubbles: true }));
+                textArea.focus();
+              }
+            }
+          });
         }
       }
-      
-      // Initialize when document is ready
+
       if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", initFloatingChat);
       } else {
         initFloatingChat();
       }
     })();
-  ', trigger_id, panel_id, overlay_id, panel_height, panel_offset, panel_offset, panel_offset, panel_offset)))
-  
+  ', trigger_id, panel_id, overlay_id, panel_height_css, panel_offset, panel_offset, panel_offset, panel_offset)))
+
+  # Inline CSS - Intentional Minimalism
+  css_code <- shiny::tags$style(shiny::HTML("
+    /* Floating Chat - Intentional Minimalism */
+
+    .floating-chat-light .floating-chat-trigger {
+      background: #171717;
+      color: #fafafa;
+    }
+    .floating-chat-light .floating-chat-trigger:hover {
+      background: #262626;
+      transform: scale(1.05);
+    }
+
+    .floating-chat-dark .floating-chat-trigger {
+      background: #fafafa;
+      color: #171717;
+    }
+    .floating-chat-dark .floating-chat-trigger:hover {
+      background: #e5e5e5;
+      transform: scale(1.05);
+    }
+
+    .floating-chat-panel {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+
+    .floating-chat-overlay {
+      opacity: 0;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: none;
+      color: #737373;
+      width: 2rem;
+      height: 2rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-ghost:hover {
+      background: rgba(0,0,0,0.05);
+      color: #171717;
+    }
+    .floating-chat-dark .btn-ghost:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fafafa;
+    }
+
+    .suggested-prompt-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.375rem 0.75rem;
+      border-radius: 9999px;
+      border: 1px solid #e5e5e5;
+      background: #fafafa;
+      color: #525252;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .suggested-prompt-chip:hover {
+      background: #f5f5f5;
+      border-color: #d4d4d4;
+      color: #171717;
+    }
+    .floating-chat-dark .suggested-prompt-chip {
+      border-color: #3f3f46;
+      background: #27272a;
+      color: #a1a1aa;
+    }
+    .floating-chat-dark .suggested-prompt-chip:hover {
+      background: #3f3f46;
+      color: #fafafa;
+    }
+
+    .suggested-prompts {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .suggested-prompts::-webkit-scrollbar {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .floating-chat-panel {
+        width: 100vw !important;
+        height: 100vh !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        border-radius: 0 !important;
+        border: none !important;
+      }
+    }
+  "))
+
   shiny::tagList(
+    css_code,
     overlay,
     trigger_btn,
     panel,
@@ -433,30 +558,17 @@ floating_chat_ui <- function(
 #' floating chat namespace.
 #'
 #' @param id Namespace ID matching the UI module
-#' @param ... Additional arguments passed to chat_server_fun (e.g., client, system_prompt)
+#' @param client Chat client object (from ellmer)
+#' @param ... Additional arguments passed to chat_server_fun
 #'
 #' @return Returns the result of the chat server function
 #'
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' server <- function(input, output, session) {
-#'   github <- ellmer::chat_github()
-#'   
-#'   floating_chat_server(
-#'     id = "floating_chat",
-#'     client = github
-#'   )
-#' }
-#' }
 floating_chat_server <- function(
-  id,
-  client,
-  ...
-) {
+    id,
+    client,
+    ...) {
   shiny::moduleServer(id, function(input, output, session) {
-    # Wrap the underlying chat server within our namespace
     shinychat::chat_mod_server("chat", client, ...)
   })
 }

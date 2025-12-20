@@ -1,40 +1,78 @@
+#!/usr/bin/env Rscript
+
+# Offcanvas Chat Demo
+# Demonstrates the offcanvas (side panel) chat interface
+
 library(shiny)
 library(bslib)
-library(ellmer)
 library(shinychat)
+library(ellmer)
 library(chatbotr)
 pkgload::load_all()
 
 ui <- page_fluid(
-  theme = bs_theme(version = 5), # ensure Bootstrap 5
-  h3("Offcanvas Chatbot (shinychat inside)"),
-  # Open-button + Offcanvas + Chat UI
-  offcanvas_chat_ui(
-    id = "assist",
-    title = "Assistant",
-    placement = "end",
-    width = 420,
-    open_label = "Open chat",
-    open_class = "btn btn-outline-primary",
-    open_icon = "comments",
-    welcome_message = "Hi! I'm here to help. Ask me anything!"
-    # If you need to pass additional args to shinychat's UI:
-    # chat_ui_args = list(placeholder = "Type your message...")
+  theme = bs_theme(version = 5),
+
+  div(
+    class = "container py-5",
+    style = "max-width: 800px;",
+
+    h1("Offcanvas Chat Demo", style = "font-weight: 600;"),
+    p(
+      class = "text-muted",
+      "Click the button below to open the chat panel."
+    ),
+
+    div(
+      class = "mt-4",
+      offcanvas_chat_ui(
+        id = "chat",
+        title = "Assistant",
+        placement = "end",
+        width = 420,
+        open_label = "Open Chat",
+        open_class = "btn btn-dark",
+        open_icon = "comments",
+        welcome_message = "Hi! How can I help you today?",
+        header_right = actionButton(
+          inputId = "clear_chat",
+          label = NULL,
+          icon = icon("trash-alt"),
+          class = "btn btn-sm btn-ghost",
+          title = "Clear chat"
+        )
+      )
+    ),
+
+    div(
+      class = "card mt-4",
+      div(
+        class = "card-body",
+        h5("Features", style = "font-weight: 500;"),
+        tags$ul(
+          class = "mb-0",
+          tags$li("Slide-out panel from any edge"),
+          tags$li("Configurable width"),
+          tags$li("Clear conversation button"),
+          tags$li("Welcome message support")
+        )
+      )
+    )
   )
 )
 
 server <- function(input, output, session) {
-  github <- ellmer::chat_github()
-  # Plug in shinychat's server module here:
   offcanvas_chat_server(
-    id = "assist",
-    client = github
-    # Pass through additional config args required by shin
-    # , system_prompt = "You are a helpful assistant."
-    # , model = "gpt-4o-mini"
-    # , temperature = 0.2
-    # , tools = list(...)
+    id = "chat",
+    client = ellmer::chat_github(
+      system_prompt = "You are a helpful assistant. Be concise."
+    )
   )
+
+  observeEvent(input$clear_chat, {
+    shinychat::chat_clear(id = "chat-chat-chat")
+    showNotification("Chat cleared", type = "message", duration = 2)
+  })
 }
 
 shinyApp(ui, server)
