@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
-# Minimal Floating Chat Example
-# This example demonstrates a basic floating chat with clear functionality
+# Floating Chat Demo
+# Demonstrates the floating chat interface with minimal design
 
 library(shiny)
 library(bslib)
@@ -10,87 +10,72 @@ library(ellmer)
 library(chatbotr)
 pkgload::load_all()
 
-# UI
 ui <- page_fluid(
-  theme = bs_theme(version = 5, preset = "bootstrap"),
+  theme = bs_theme(version = 5),
 
-  # Main app content
   div(
-    class = "container mt-5",
-    h1("Minimal Floating Chat Demo"),
-    p("This is your main application content."),
+    class = "container py-5",
+    style = "max-width: 800px;",
+
+    h1("Floating Chat Demo", style = "font-weight: 600;"),
     p(
-      "Click the floating chat button in the bottom-right corner to open the chat assistant."
+      class = "text-muted",
+      "Click the button in the bottom-right corner to open the chat."
     ),
 
     div(
       class = "card mt-4",
       div(
         class = "card-body",
-        h5(class = "card-title", "Features Demonstrated:"),
+        h5("Features", style = "font-weight: 500;"),
         tags$ul(
-          tags$li("Floating chat button that opens an overlay chat panel"),
-          tags$li("Clean, minimal design with light theme"),
-          tags$li("Clear button in the header to reset conversation"),
+          class = "mb-0",
+          tags$li("Floating trigger button"),
+          tags$li("Overlay chat panel"),
           tags$li("Minimize and maximize controls"),
-          tags$li("Click outside to close the chat")
+          tags$li("Suggested prompts"),
+          tags$li("Clear conversation button")
         )
       )
     )
   ),
 
-  # Floating chat UI with clear button
   floating_chat_ui(
-    id = "my_chat",
-    title = "AI Assistant",
+    id = "chat",
+    title = "Assistant",
     trigger_position = "bottom-right",
-    trigger_icon = "robot",
-    trigger_size = 60,
-    panel_width = "40vw",
-    panel_height = "85vh",
+    trigger_icon = "comments",
+    panel_width = "420px",
+    panel_height = "600px",
     theme = "light",
-    enable_minimize = TRUE,
-    enable_maximize = TRUE,
-    # Add a clear button to the header
+    welcome_message = "Hello! How can I help you today?",
+    suggested_prompts = c(
+      "Tell me a joke",
+      "Explain R in one sentence",
+      "What can you do?"
+    ),
     header_actions = actionButton(
       inputId = "clear_chat",
       label = NULL,
       icon = icon("trash-alt"),
       class = "btn btn-sm btn-ghost",
-      style = "padding: 4px 8px;",
       title = "Clear conversation"
-    ),
-    welcome_message = "Welcome! I'm your AI assistant. How can I help you today?"
+    )
   )
 )
 
-# Server
 server <- function(input, output, session) {
-  # Floating chat server
-  chat <- floating_chat_server(
-    id = "my_chat",
+  floating_chat_server(
+    id = "chat",
     client = ellmer::chat_github(
-      system_prompt = "You are a helpful assistant for this demo app."
+      system_prompt = "You are a helpful assistant. Be concise."
     )
   )
 
-  # Clear chat functionality - Use shinychat::chat_clear()
   observeEvent(input$clear_chat, {
-    # The chat ID is namespaced: module ID "my_chat" + nested chat ID "chat-chat"
-    shinychat::chat_clear(
-      id = "my_chat-chat-chat",
-      session = session
-    )
-    # another valid approach:
-    # chat$clear()
-
-    showNotification(
-      "Chat cleared! Starting a new conversation.",
-      type = "message",
-      duration = 3
-    )
+    shinychat::chat_clear(id = "chat-chat-chat", session = session)
+    showNotification("Chat cleared", type = "message", duration = 2)
   })
 }
 
-# Run the app
-shinyApp(ui = ui, server = server)
+shinyApp(ui, server)
