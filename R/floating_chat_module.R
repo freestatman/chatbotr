@@ -176,7 +176,7 @@ floating_chat_ui <- function(
       class = "btn btn-sm btn-ghost floating-chat-maximize",
       type = "button",
       `aria-label` = "Maximize chat",
-      shiny::icon("expand")
+      shiny::icon("expand-arrows-alt")
     )
   } else {
     NULL
@@ -338,7 +338,7 @@ floating_chat_ui <- function(
             } else {
               panel.style.height = "3.5rem";
               panel.setAttribute("data-minimized", "true");
-              minimizeBtn.innerHTML = \'<i class="fa fa-expand"></i>\';
+              minimizeBtn.innerHTML = \'<i class="fa fa-chevron-up"></i>\';
             }
           });
         }
@@ -366,7 +366,7 @@ floating_chat_ui <- function(
               panel.style.borderRadius = "12px";
 
               panel.setAttribute("data-maximized", "false");
-              maximizeBtn.innerHTML = \'<i class="fa fa-expand"></i>\';
+              maximizeBtn.innerHTML = \'<i class="fa fa-expand-arrows-alt"></i>\';
             } else {
               if (isMinimized) {
                 const originalHeight = panel.getAttribute("data-original-height");
@@ -385,7 +385,7 @@ floating_chat_ui <- function(
               panel.style.borderRadius = "0";
 
               panel.setAttribute("data-maximized", "true");
-              maximizeBtn.innerHTML = \'<i class="fa fa-compress"></i>\';
+              maximizeBtn.innerHTML = \'<i class="fa fa-compress-arrows-alt"></i>\';
             }
           });
         }
