@@ -29,7 +29,7 @@ ui <- page_fluid(
         id = "chat",
         title = "Assistant",
         placement = "end",
-        width = 420,
+        width = "30vw",
         open_label = "Open Chat",
         open_class = "btn btn-dark",
         open_icon = "comments",
