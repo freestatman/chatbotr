@@ -67,7 +67,7 @@
         } else {
           panel.style.height = "3.75rem";
           panel.setAttribute("data-minimized", "true");
-          minimizeBtn.innerHTML = '<i class="fa fa-expand"></i>';
+          minimizeBtn.innerHTML = '<i class="fa fa-chevron-up"></i>';
           minimizeBtn.setAttribute("aria-label", "Restore chat");
         }
       });
@@ -98,7 +98,7 @@
           panel.style.borderRadius = "0.75rem";
           
           panel.setAttribute("data-maximized", "false");
-          maximizeBtn.innerHTML = '<i class="fa fa-expand"></i>';
+          maximizeBtn.innerHTML = '<i class="fa fa-expand-arrows-alt"></i>';
           maximizeBtn.setAttribute("aria-label", "Maximize chat");
         } else {
           // Restore from minimized state if needed
@@ -123,7 +123,7 @@
           panel.style.borderRadius = "0";
           
           panel.setAttribute("data-maximized", "true");
-          maximizeBtn.innerHTML = '<i class="fa fa-compress"></i>';
+          maximizeBtn.innerHTML = '<i class="fa fa-compress-arrows-alt"></i>';
           maximizeBtn.setAttribute("aria-label", "Restore chat");
         }
       });

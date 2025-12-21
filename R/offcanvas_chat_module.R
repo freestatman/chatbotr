@@ -109,10 +109,19 @@ offcanvas_chat_ui <- function(
     chat_ui
   )
 
+  # Format dimensions (handle both px and viewport units)
+  format_dimension <- function(dim) {
+    if (is.numeric(dim)) {
+      paste0(dim, "px")
+    } else {
+      dim
+    }
+  }
+
   # Offcanvas container
   oc_class <- paste("offcanvas", paste0("offcanvas-", placement))
   oc_style <- if (placement %in% c("start", "end")) {
-    paste0("--bs-offcanvas-width:", width, "px;")
+    paste0("--bs-offcanvas-width:", format_dimension(width), ";")
   } else {
     NULL
   }
