@@ -60,8 +60,8 @@ ui <- page_fluid(
     title = "AI Assistant",
     trigger_position = "bottom-right",
     trigger_icon = "robot",
-    panel_width = 450,
-    panel_height = 650,
+    panel_width = "30vw",
+    panel_height = "85vh",
     theme = "light",
     welcome_message = "Configure your API settings using the gear icon to get started.",
     header_actions = tagList(

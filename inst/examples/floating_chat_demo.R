@@ -45,8 +45,8 @@ ui <- page_fluid(
     title = "Assistant",
     trigger_position = "bottom-right",
     trigger_icon = "comments",
-    panel_width = "420px",
-    panel_height = "600px",
+    panel_width = "30vw",
+    panel_height = "85vh",
     theme = "light",
     welcome_message = "Hello! How can I help you today?",
     suggested_prompts = c(

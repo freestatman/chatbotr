@@ -181,8 +181,8 @@ ui <- page_fluid(
     trigger_position = "bottom-right",
     trigger_icon = "comment-dots",
     trigger_size = 60,
-    panel_width = 450,
-    panel_height = 700,
+    panel_width = "30vw",
+    panel_height = "85vh",
     theme = "light",
     welcome_message = paste0(
       "👋 Hello! I'm your AI assistant.\n\n",
