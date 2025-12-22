@@ -34,6 +34,11 @@ ui <- page_fluid(
         open_class = "btn btn-dark",
         open_icon = "comments",
         welcome_message = "Hi! How can I help you today?",
+        suggested_prompts = c(
+          "What is an offcanvas?",
+          "Show me a ggplot example",
+          "Can you summarize this page?"
+        ),
         header_right = actionButton(
           inputId = "clear_chat",
           label = NULL,

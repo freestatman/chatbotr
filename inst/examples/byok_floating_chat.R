@@ -64,6 +64,11 @@ ui <- page_fluid(
     panel_height = "85vh",
     theme = "light",
     welcome_message = "Configure your API settings using the gear icon to get started.",
+    suggested_prompts = c(
+      "How do I set my API key?",
+      "Which models are supported?",
+      "Tell me a joke"
+    ),
     header_actions = tagList(
       actionButton(
         inputId = "open_settings",
