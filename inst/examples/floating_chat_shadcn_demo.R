@@ -189,6 +189,11 @@ ui <- page_fluid(
       "I'm powered by state-of-the-art shadcn/ui design principles. ",
       "Ask me anything or just chat!"
     ),
+    suggested_prompts = c(
+      "Explain shadcn/ui design",
+      "Show me some R code",
+      "How do I customize this?"
+    ),
     header_actions = actionButton(
       NS("chat_module", "clear_chat"),
       label = NULL,

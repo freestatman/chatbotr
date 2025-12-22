@@ -78,15 +78,6 @@ floating_chat_ui <- function(
   vertical <- position_parts[1] # top or bottom
   horizontal <- position_parts[2] # left or right
 
-  # Format dimensions (handle both px and viewport units)
-  format_dimension <- function(dim) {
-    if (is.numeric(dim)) {
-      paste0(dim, "px")
-    } else {
-      dim
-    }
-  }
-
   panel_width_css <- format_dimension(panel_width)
   panel_height_css <- format_dimension(panel_height)
 
@@ -212,29 +203,7 @@ floating_chat_ui <- function(
   )
 
   # Suggested Prompts Area
-  prompts_ui <- if (!is.null(suggested_prompts) && length(suggested_prompts) > 0) {
-    shiny::tags$div(
-      class = "suggested-prompts",
-      style = paste0(
-        "padding: 0.5rem 0.75rem; ",
-        "overflow-x: auto; ",
-        "white-space: nowrap; ",
-        "display: flex; ",
-        "gap: 0.5rem; ",
-        "border-top: 1px solid ", border_color, "; ",
-        "background: ", bg_color, ";"
-      ),
-      lapply(suggested_prompts, function(prompt) {
-        shiny::tags$button(
-          class = "suggested-prompt-chip",
-          type = "button",
-          prompt
-        )
-      })
-    )
-  } else {
-    NULL
-  }
+  prompts_ui <- chat_prompts_ui(suggested_prompts, border_color, bg_color)
 
   # Chat UI content
   chat_ui <- do.call(
@@ -438,8 +407,8 @@ floating_chat_ui <- function(
     })();
   ', trigger_id, panel_id, overlay_id, panel_height_css, panel_offset, panel_offset, panel_offset, panel_offset)))
 
-  # Inline CSS - Intentional Minimalism
-  css_code <- shiny::tags$style(shiny::HTML("
+  # Inline CSS - Intentional Minimalism (floating-specific + shared)
+  floating_specific_css <- shiny::tags$style(shiny::HTML("
     /* Floating Chat - Intentional Minimalism */
 
     .floating-chat-light .floating-chat-trigger {
@@ -469,64 +438,6 @@ floating_chat_ui <- function(
       opacity: 0;
     }
 
-    .btn-ghost {
-      background: transparent;
-      border: none;
-      color: #737373;
-      width: 2rem;
-      height: 2rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .btn-ghost:hover {
-      background: rgba(0,0,0,0.05);
-      color: #171717;
-    }
-    .floating-chat-dark .btn-ghost:hover {
-      background: rgba(255,255,255,0.1);
-      color: #fafafa;
-    }
-
-    .suggested-prompt-chip {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.375rem 0.75rem;
-      border-radius: 9999px;
-      border: 1px solid #e5e5e5;
-      background: #fafafa;
-      color: #525252;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      white-space: nowrap;
-    }
-    .suggested-prompt-chip:hover {
-      background: #f5f5f5;
-      border-color: #d4d4d4;
-      color: #171717;
-    }
-    .floating-chat-dark .suggested-prompt-chip {
-      border-color: #3f3f46;
-      background: #27272a;
-      color: #a1a1aa;
-    }
-    .floating-chat-dark .suggested-prompt-chip:hover {
-      background: #3f3f46;
-      color: #fafafa;
-    }
-
-    .suggested-prompts {
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-    .suggested-prompts::-webkit-scrollbar {
-      display: none;
-    }
-
     @media (max-width: 768px) {
       .floating-chat-panel {
         width: 100vw !important;
@@ -541,8 +452,11 @@ floating_chat_ui <- function(
     }
   "))
 
+  shared_css <- chat_shared_css(include_dark_theme = TRUE)
+
   shiny::tagList(
-    css_code,
+    floating_specific_css,
+    shared_css,
     overlay,
     trigger_btn,
     panel,
@@ -572,5 +486,3 @@ floating_chat_server <- function(
     shinychat::chat_mod_server("chat", client, ...)
   })
 }
-
-`%||%` <- function(x, y) if (is.null(x)) y else x

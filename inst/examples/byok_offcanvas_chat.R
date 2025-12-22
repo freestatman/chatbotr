@@ -67,6 +67,11 @@ ui <- page_fluid(
         open_class = "btn btn-dark",
         open_icon = "comments",
         welcome_message = "Configure your API settings first.",
+        suggested_prompts = c(
+          "I need help with settings",
+          "What is BYOK?",
+          "Can you write R code?"
+        ),
         header_right = actionButton(
           inputId = "clear_chat",
           label = NULL,

@@ -16,6 +16,7 @@
 #' @param welcome_message Optional welcome message to display when chat is first opened.
 #'   If provided, this will be passed to the chat UI function via chat_ui_args.
 #' @param header_right Optional UI elements to display in the header's right side
+#' @param suggested_prompts Optional vector of suggested prompt strings to display as chips.
 #'
 #' @return A Shiny UI tagList containing the open button and offcanvas panel
 #'
@@ -47,7 +48,8 @@ offcanvas_chat_ui <- function(
     open_icon = NULL,
     chat_ui_args = list(),
     welcome_message = NULL,
-    header_right = NULL) {
+    header_right = NULL,
+    suggested_prompts = NULL) {
   placement <- match.arg(placement)
   ns <- shiny::NS(id)
 
@@ -104,19 +106,14 @@ offcanvas_chat_ui <- function(
     c(list(id = ns("chat")), chat_ui_args)
   )
 
+  # Suggested Prompts Area
+  prompts_ui <- chat_prompts_ui(prompts = suggested_prompts)
+
   body <- shiny::tags$div(
     class = "offcanvas-body p-0 d-flex flex-column",
-    chat_ui
+    chat_ui,
+    prompts_ui
   )
-
-  # Format dimensions (handle both px and viewport units)
-  format_dimension <- function(dim) {
-    if (is.numeric(dim)) {
-      paste0(dim, "px")
-    } else {
-      dim
-    }
-  }
 
   # Offcanvas container
   oc_class <- paste("offcanvas", paste0("offcanvas-", placement))
@@ -137,8 +134,11 @@ offcanvas_chat_ui <- function(
     body
   )
 
-  # Minimal CSS for offcanvas styling
-  css_code <- shiny::tags$style(shiny::HTML("
+  # JS for suggested prompts
+  js_code <- chat_prompts_js(canvas_id)
+
+  # Minimal CSS for offcanvas-specific styling
+  offcanvas_specific_css <- shiny::tags$style(shiny::HTML("
     .offcanvas-header {
       padding: 0.875rem 1rem;
       background: #fff;
@@ -146,26 +146,11 @@ offcanvas_chat_ui <- function(
     .offcanvas-body {
       background: #fff;
     }
-    .btn-ghost {
-      background: transparent;
-      border: none;
-      color: #737373;
-      width: 2rem;
-      height: 2rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .btn-ghost:hover {
-      background: rgba(0,0,0,0.05);
-      color: #171717;
-    }
   "))
 
-  shiny::tagList(css_code, open_btn, offcanvas_div)
+  shared_css <- chat_shared_css()
+
+  shiny::tagList(offcanvas_specific_css, shared_css, open_btn, offcanvas_div, js_code)
 }
 
 #' Offcanvas Chat Server Module
@@ -190,5 +175,3 @@ offcanvas_chat_server <- function(
     shinychat::chat_mod_server("chat", client, ...)
   })
 }
-
-`%||%` <- function(x, y) if (is.null(x)) y else x
