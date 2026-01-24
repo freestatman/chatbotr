@@ -44,21 +44,22 @@
 #' )
 #' }
 floating_chat_ui <- function(
-    id,
-    title = "Chat Assistant",
-    trigger_position = c("bottom-right", "bottom-left", "top-right", "top-left"),
-    trigger_icon = "comments",
-    trigger_size = 60,
-    panel_width = 400,
-    panel_height = 600,
-    panel_offset = 20,
-    chat_ui_args = list(),
-    welcome_message = NULL,
-    suggested_prompts = NULL,
-    theme = c("light", "dark"),
-    enable_minimize = TRUE,
-    enable_maximize = TRUE,
-    header_actions = NULL) {
+  id,
+  title = "Chat Assistant",
+  trigger_position = c("bottom-right", "bottom-left", "top-right", "top-left"),
+  trigger_icon = "comments",
+  trigger_size = 60,
+  panel_width = 400,
+  panel_height = 600,
+  panel_offset = 20,
+  chat_ui_args = list(),
+  welcome_message = NULL,
+  suggested_prompts = NULL,
+  theme = c("light", "dark"),
+  enable_minimize = TRUE,
+  enable_maximize = TRUE,
+  header_actions = NULL
+) {
   trigger_position <- match.arg(trigger_position)
   theme <- match.arg(theme)
   ns <- shiny::NS(id)
@@ -85,10 +86,20 @@ floating_chat_ui <- function(
   trigger_style <- paste0(
     "position: fixed; ",
     "z-index: 1046; ",
-    vertical, ": ", panel_offset, "px; ",
-    horizontal, ": ", panel_offset, "px; ",
-    "width: ", trigger_size, "px; ",
-    "height: ", trigger_size, "px; ",
+    vertical,
+    ": ",
+    panel_offset,
+    "px; ",
+    horizontal,
+    ": ",
+    panel_offset,
+    "px; ",
+    "width: ",
+    trigger_size,
+    "px; ",
+    "height: ",
+    trigger_size,
+    "px; ",
     "border-radius: 50%; ",
     "display: flex; ",
     "align-items: center; ",
@@ -105,13 +116,27 @@ floating_chat_ui <- function(
   panel_style <- paste0(
     "position: fixed; ",
     "z-index: 1050; ",
-    vertical, ": ", panel_offset, "px; ",
-    horizontal, ": ", panel_offset, "px; ",
-    "width: ", panel_width_css, "; ",
-    "height: ", panel_height_css, "; ",
+    vertical,
+    ": ",
+    panel_offset,
+    "px; ",
+    horizontal,
+    ": ",
+    panel_offset,
+    "px; ",
+    "width: ",
+    panel_width_css,
+    "; ",
+    "height: ",
+    panel_height_css,
+    "; ",
     "display: none; ",
-    "background: ", bg_color, "; ",
-    "border: 1px solid ", border_color, "; ",
+    "background: ",
+    bg_color,
+    "; ",
+    "border: 1px solid ",
+    border_color,
+    "; ",
     "border-radius: 12px; ",
     "overflow: hidden; ",
     "transition: all 0.2s ease; ",
@@ -132,7 +157,11 @@ floating_chat_ui <- function(
   )
 
   # Theme classes
-  theme_class <- if (theme == "dark") "floating-chat-dark" else "floating-chat-light"
+  theme_class <- if (theme == "dark") {
+    "floating-chat-dark"
+  } else {
+    "floating-chat-light"
+  }
 
   # Trigger button
   trigger_btn <- shiny::tags$div(
@@ -177,11 +206,15 @@ floating_chat_ui <- function(
     class = "floating-chat-header",
     style = paste0(
       "padding: 0.875rem 1rem; ",
-      "border-bottom: 1px solid ", border_color, "; ",
+      "border-bottom: 1px solid ",
+      border_color,
+      "; ",
       "display: flex; ",
       "align-items: center; ",
       "justify-content: space-between; ",
-      "background: ", bg_color, "; ",
+      "background: ",
+      bg_color,
+      "; ",
       "min-height: 3.5rem; "
     ),
     shiny::tags$h5(
@@ -219,7 +252,9 @@ floating_chat_ui <- function(
       "overflow: hidden; ",
       "display: flex; ",
       "flex-direction: column; ",
-      "background: ", bg_color, "; "
+      "background: ",
+      bg_color,
+      "; "
     ),
     chat_ui,
     prompts_ui
@@ -250,7 +285,8 @@ floating_chat_ui <- function(
   )
 
   # Inline JavaScript for interactions (reliable, no async loading issues)
-  js_code <- shiny::tags$script(shiny::HTML(sprintf('
+  js_code <- shiny::tags$script(shiny::HTML(sprintf(
+    '
     (function() {
       const triggerId = "%s";
       const panelId = "%s";
@@ -405,10 +441,20 @@ floating_chat_ui <- function(
         initFloatingChat();
       }
     })();
-  ', trigger_id, panel_id, overlay_id, panel_height_css, panel_offset, panel_offset, panel_offset, panel_offset)))
+  ',
+    trigger_id,
+    panel_id,
+    overlay_id,
+    panel_height_css,
+    panel_offset,
+    panel_offset,
+    panel_offset,
+    panel_offset
+  )))
 
   # Inline CSS - Intentional Minimalism (floating-specific + shared)
-  floating_specific_css <- shiny::tags$style(shiny::HTML("
+  floating_specific_css <- shiny::tags$style(shiny::HTML(
+    "
     /* Floating Chat - Intentional Minimalism */
 
     .floating-chat-light .floating-chat-trigger {
@@ -450,7 +496,8 @@ floating_chat_ui <- function(
         border: none !important;
       }
     }
-  "))
+  "
+  ))
 
   shared_css <- chat_shared_css(include_dark_theme = TRUE)
 
@@ -479,9 +526,10 @@ floating_chat_ui <- function(
 #'
 #' @export
 floating_chat_server <- function(
-    id,
-    client,
-    ...) {
+  id,
+  client,
+  ...
+) {
   shiny::moduleServer(id, function(input, output, session) {
     shinychat::chat_mod_server("chat", client, ...)
   })

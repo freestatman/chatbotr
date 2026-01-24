@@ -39,17 +39,18 @@
 #' )
 #' }
 offcanvas_chat_ui <- function(
-    id,
-    title = "Chat",
-    placement = c("end", "start", "bottom", "top"),
-    width = 420,
-    open_label = "Chat",
-    open_class = "btn btn-dark",
-    open_icon = NULL,
-    chat_ui_args = list(),
-    welcome_message = NULL,
-    header_right = NULL,
-    suggested_prompts = NULL) {
+  id,
+  title = "Chat",
+  placement = c("end", "start", "bottom", "top"),
+  width = 420,
+  open_label = "Chat",
+  open_class = "btn btn-dark",
+  open_icon = NULL,
+  chat_ui_args = list(),
+  welcome_message = NULL,
+  header_right = NULL,
+  suggested_prompts = NULL
+) {
   placement <- match.arg(placement)
   ns <- shiny::NS(id)
 
@@ -138,7 +139,8 @@ offcanvas_chat_ui <- function(
   js_code <- chat_prompts_js(canvas_id)
 
   # Minimal CSS for offcanvas-specific styling
-  offcanvas_specific_css <- shiny::tags$style(shiny::HTML("
+  offcanvas_specific_css <- shiny::tags$style(shiny::HTML(
+    "
     .offcanvas-header {
       padding: 0.875rem 1rem;
       background: #fff;
@@ -146,11 +148,18 @@ offcanvas_chat_ui <- function(
     .offcanvas-body {
       background: #fff;
     }
-  "))
+  "
+  ))
 
   shared_css <- chat_shared_css()
 
-  shiny::tagList(offcanvas_specific_css, shared_css, open_btn, offcanvas_div, js_code)
+  shiny::tagList(
+    offcanvas_specific_css,
+    shared_css,
+    open_btn,
+    offcanvas_div,
+    js_code
+  )
 }
 
 #' Offcanvas Chat Server Module
@@ -168,9 +177,10 @@ offcanvas_chat_ui <- function(
 #'
 #' @export
 offcanvas_chat_server <- function(
-    id,
-    client,
-    ...) {
+  id,
+  client,
+  ...
+) {
   shiny::moduleServer(id, function(input, output, session) {
     shinychat::chat_mod_server("chat", client, ...)
   })
