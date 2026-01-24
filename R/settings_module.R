@@ -1,3 +1,68 @@
+#' Get environment variable names for a provider
+#'
+#' @description
+#' Returns the environment variable name(s) that can be used for API key
+#' authentication for a given provider. Some providers support multiple
+#' environment variable names.
+#'
+#' @param provider Provider ID (e.g., "github", "openai", "anthropic")
+#'
+#' @return Character vector of environment variable names, or NULL if provider
+#'   doesn't use API keys (e.g., ollama)
+#'
+#' @keywords internal
+get_provider_env_var <- function(provider) {
+  switch(
+    provider,
+    "github" = c("GITHUB_PAT", "GITHUB_TOKEN"),
+    "openai" = "OPENAI_API_KEY",
+    "anthropic" = "ANTHROPIC_API_KEY",
+    "google" = c("GEMINI_API_KEY", "GOOGLE_API_KEY"),
+    NULL
+  )
+}
+
+#' Detect API key from environment variables
+#'
+#' @description
+#' Checks if any of the provider's supported environment variables are set
+#' and returns information about the first one found.
+#'
+#' @param provider Provider ID (e.g., "github", "openai", "anthropic")
+#'
+#' @return A list with `var_name`, `key`, and `masked` (preview), or NULL if
+#'   no environment variable is set
+#'
+#' @keywords internal
+detect_env_key <- function(provider) {
+  vars <- get_provider_env_var(provider)
+  if (is.null(vars)) {
+    return(NULL)
+  }
+
+  for (var in vars) {
+    key <- Sys.getenv(var, "")
+    if (nchar(key) > 0) {
+      # Create masked preview: first 4 chars + **** + last 4 chars
+      masked <- if (nchar(key) > 8) {
+        paste0(
+          substr(key, 1, 4),
+          "****",
+          substr(key, nchar(key) - 3, nchar(key))
+        )
+      } else {
+        "****"
+      }
+      return(list(
+        var_name = var,
+        key = key,
+        masked = masked
+      ))
+    }
+  }
+  NULL
+}
+
 #' API Settings UI Module
 #'
 #' @description
@@ -29,7 +94,62 @@ api_settings_ui <- function(
 ) {
   ns <- shiny::NS(id)
 
-  settings_content <- shiny::tagList(
+  # Style for settings
+  settings_style <- shiny::tags$style(shiny::HTML(
+    "
+    .api-settings-container {
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .api-settings-container .form-label {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #334155;
+      margin-bottom: 0.5rem;
+    }
+    .api-settings-container .form-control, 
+    .api-settings-container .form-select {
+      border-radius: var(--chat-radius-md, 0.75rem);
+      border: 1px solid #e2e8f0;
+      padding: 0.625rem 0.875rem;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+    }
+    .api-settings-container .form-control:focus, 
+    .api-settings-container .form-select:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 101, 241, 0.1);
+    }
+    .api-settings-container .btn-dark {
+      background: #6366f1;
+      border: none;
+      border-radius: var(--chat-radius-md, 0.75rem);
+      padding: 0.625rem 1.25rem;
+      font-weight: 500;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .api-settings-container .btn-dark:hover {
+      background: #4f46e5;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+    }
+    .api-settings-container .btn-outline-secondary {
+      border-radius: var(--chat-radius-md, 0.75rem);
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      padding: 0.625rem 1.25rem;
+      font-weight: 500;
+    }
+    .api-settings-container .btn-outline-secondary:hover {
+      background: #f8fafc;
+      color: #0f172a;
+      border-color: #cbd5e1;
+    }
+  "
+  ))
+
+  settings_content <- shiny::tags$div(
+    class = "api-settings-container",
+    settings_style,
     shiny::selectInput(
       inputId = ns("provider"),
       label = "LLM Provider",
@@ -43,7 +163,6 @@ api_settings_ui <- function(
       ),
       selected = default_provider
     ),
-
     shiny::conditionalPanel(
       condition = sprintf("input['%s'] != 'ollama'", ns("provider")),
       ns = ns,
@@ -57,9 +176,9 @@ api_settings_ui <- function(
           )
         ),
         placeholder = "Enter your API key or token"
-      )
+      ),
+      shiny::uiOutput(ns("env_key_hint"))
     ),
-
     shiny::conditionalPanel(
       condition = sprintf("input['%s'] == 'azure'", ns("provider")),
       ns = ns,
@@ -69,7 +188,6 @@ api_settings_ui <- function(
         placeholder = "https://your-resource.openai.azure.com"
       )
     ),
-
     shiny::conditionalPanel(
       condition = sprintf("input['%s'] == 'ollama'", ns("provider")),
       ns = ns,
@@ -80,9 +198,7 @@ api_settings_ui <- function(
         placeholder = "http://localhost:11434"
       )
     ),
-
     shiny::uiOutput(ns("model_selector")),
-
     shiny::tags$div(
       class = "d-flex align-items-center gap-2 mb-2",
       shiny::actionButton(
@@ -90,16 +206,15 @@ api_settings_ui <- function(
         label = "Refresh",
         class = "btn btn-sm btn-outline-secondary",
         icon = shiny::icon("sync"),
-        style = "font-size: 0.8rem;"
+        style = "font-size: 0.8rem; padding: 0.25rem 0.75rem;"
       ),
       shiny::uiOutput(ns("models_status"))
     ),
-
     if (show_advanced) {
       shiny::tagList(
         shiny::hr(),
         shiny::tags$h6(
-          style = "font-weight: 500; font-size: 0.875rem;",
+          style = "font-weight: 600; font-size: 0.875rem; color: #1e293b;",
           "Advanced Settings"
         ),
         shiny::sliderInput(
@@ -119,13 +234,12 @@ api_settings_ui <- function(
         )
       )
     },
-
     shiny::tags$div(
-      class = "mt-3 d-flex gap-2",
+      class = "mt-4 d-flex gap-2",
       shiny::actionButton(
         inputId = ns("save_settings"),
-        label = "Save",
-        class = "btn btn-dark",
+        label = "Save Settings",
+        class = "btn btn-dark w-100",
         icon = shiny::icon("check")
       ),
       shiny::actionButton(
@@ -135,13 +249,12 @@ api_settings_ui <- function(
         icon = shiny::icon("plug")
       )
     ),
-
     shiny::uiOutput(ns("connection_status"))
   )
 
   if (inline) {
     shiny::tags$div(
-      class = "api-settings-inline p-3 border rounded",
+      class = "api-settings-inline p-4 border rounded-3 bg-white shadow-sm",
       settings_content
     )
   } else {
@@ -365,6 +478,62 @@ api_settings_server <- function(id, default_system_prompt = NULL) {
       }
     })
 
+    # Render environment variable hint for API key
+    output$env_key_hint <- shiny::renderUI({
+      ns <- session$ns
+      provider <- input$provider
+
+      # Skip for ollama (no key needed) and azure (not supported)
+      if (provider %in% c("ollama", "azure")) {
+        return(NULL)
+      }
+
+      env_info <- detect_env_key(provider)
+
+      if (!is.null(env_info)) {
+        shiny::tags$div(
+          class = "d-flex align-items-center gap-2 mt-1 mb-2",
+          shiny::tags$small(
+            class = "text-success",
+            shiny::icon("check-circle"),
+            sprintf(" %s found: %s", env_info$var_name, env_info$masked)
+          ),
+          shiny::actionLink(
+            inputId = ns("load_env_key"),
+            label = "Load",
+            class = "text-primary small",
+            style = "cursor: pointer; text-decoration: underline;"
+          )
+        )
+      } else {
+        env_vars <- get_provider_env_var(provider)
+        if (!is.null(env_vars)) {
+          shiny::tags$small(
+            class = "text-muted mt-1 d-block",
+            shiny::icon("info-circle"),
+            sprintf(" Tip: Set %s in .Renviron", env_vars[1])
+          )
+        }
+      }
+    })
+
+    # Handle loading API key from environment variable
+    shiny::observeEvent(input$load_env_key, {
+      env_info <- detect_env_key(input$provider)
+      if (!is.null(env_info)) {
+        shiny::updateTextInput(
+          session,
+          "api_key",
+          value = env_info$key
+        )
+        shiny::showNotification(
+          sprintf("Loaded %s from environment", env_info$var_name),
+          type = "message",
+          duration = 3
+        )
+      }
+    })
+
     # Refresh models when button is clicked
     shiny::observeEvent(input$refresh_models, {
       provider <- input$provider
@@ -410,6 +579,38 @@ api_settings_server <- function(id, default_system_prompt = NULL) {
     shiny::observe({
       # Reset available models when provider changes
       config$available_models <- NULL
+    }) |>
+      shiny::bindEvent(input$provider)
+
+    # Auto-load API key from environment when provider changes
+    shiny::observe({
+      provider <- input$provider
+
+      # Skip for ollama (no key needed) and azure (not supported)
+      if (provider %in% c("ollama", "azure")) {
+        return()
+      }
+
+      # Check if key already entered
+      current_key <- input$api_key
+      if (!is.null(current_key) && nchar(current_key) > 0) {
+        return()
+      }
+
+      # Auto-load from environment if available
+      env_info <- detect_env_key(provider)
+      if (!is.null(env_info)) {
+        shiny::updateTextInput(
+          session,
+          "api_key",
+          value = env_info$key
+        )
+        shiny::showNotification(
+          sprintf("Auto-loaded %s from environment", env_info$var_name),
+          type = "message",
+          duration = 3
+        )
+      }
     }) |>
       shiny::bindEvent(input$provider)
 

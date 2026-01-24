@@ -8,37 +8,31 @@
     const overlay = document.getElementById(overlayId);
     
     if (!trigger || !panel || !overlay) {
-      // Retry initialization if elements aren't ready yet
       setTimeout(() => initFloatingChat(config), 50);
       return;
     }
     
-    // Open chat function
     function openChat() {
       panel.style.display = "flex";
       panel.style.flexDirection = "column";
       overlay.style.display = "block";
-      trigger.style.transform = "scale(0)";
+      trigger.style.transform = "scale(0) rotate(-45deg)";
       trigger.style.opacity = "0";
       
-      // Animate in with enhanced easing
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         panel.style.opacity = "1";
-        panel.style.transform = "scale(1) translateY(0)";
+        panel.style.transform = "translateY(0) scale(1)";
         overlay.style.opacity = "1";
-      }, 10);
+      });
       
-      // Focus first input in chat
       setTimeout(() => {
         const firstInput = panel.querySelector("textarea, input[type='text']");
         if (firstInput) firstInput.focus();
-      }, 350);
+      }, 400);
     }
     
-    // Open chat on click
     trigger.addEventListener("click", openChat);
     
-    // Open chat on Enter/Space key
     trigger.addEventListener("keydown", function(e) {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
@@ -46,7 +40,6 @@
       }
     });
     
-    // Close chat
     const closeBtn = panel.querySelector(".floating-chat-close");
     if (closeBtn) {
       closeBtn.addEventListener("click", function() {
@@ -54,7 +47,6 @@
       });
     }
     
-    // Minimize chat
     const minimizeBtn = panel.querySelector(".floating-chat-minimize");
     if (minimizeBtn) {
       minimizeBtn.addEventListener("click", function() {
@@ -65,7 +57,7 @@
           minimizeBtn.innerHTML = '<i class="fa fa-minus"></i>';
           minimizeBtn.setAttribute("aria-label", "Minimize chat");
         } else {
-          panel.style.height = "3.75rem";
+          panel.style.height = "4.5rem";
           panel.setAttribute("data-minimized", "true");
           minimizeBtn.innerHTML = '<i class="fa fa-chevron-up"></i>';
           minimizeBtn.setAttribute("aria-label", "Restore chat");
@@ -73,7 +65,6 @@
       });
     }
     
-    // Maximize chat
     const maximizeBtn = panel.querySelector(".floating-chat-maximize");
     if (maximizeBtn) {
       maximizeBtn.addEventListener("click", function() {
@@ -81,7 +72,6 @@
         const isMinimized = panel.getAttribute("data-minimized") === "true";
         
         if (isMaximized) {
-          // Restore to original size
           const originalWidth = panel.getAttribute("data-original-width");
           const originalHeight = panel.getAttribute("data-original-height");
           const originalPosition = panel.getAttribute("data-original-position");
@@ -95,13 +85,13 @@
           panel.style.bottom = vert === "bottom" ? config.panelOffset + "px" : "auto";
           panel.style.left = horiz === "left" ? config.panelOffset + "px" : "auto";
           panel.style.right = horiz === "right" ? config.panelOffset + "px" : "auto";
-          panel.style.borderRadius = "0.75rem";
+          // Use Bootstrap 5 radius for consistency with CSS
+          panel.style.borderRadius = "var(--bs-border-radius-lg)";
           
           panel.setAttribute("data-maximized", "false");
           maximizeBtn.innerHTML = '<i class="fa fa-expand-arrows-alt"></i>';
           maximizeBtn.setAttribute("aria-label", "Maximize chat");
         } else {
-          // Restore from minimized state if needed
           if (isMinimized) {
             const originalHeight = panel.getAttribute("data-original-height");
             panel.style.height = originalHeight;
@@ -113,7 +103,6 @@
             }
           }
           
-          // Maximize to full screen
           panel.style.top = "0";
           panel.style.bottom = "0";
           panel.style.left = "0";
@@ -129,12 +118,10 @@
       });
     }
     
-    // Close on overlay click
     overlay.addEventListener("click", function() {
       closeChat();
     });
     
-    // Close on Escape key
     document.addEventListener("keydown", function(e) {
       if (e.key === "Escape" && panel.style.display === "flex") {
         closeChat();
@@ -143,19 +130,18 @@
     
     function closeChat() {
       panel.style.opacity = "0";
-      panel.style.transform = "scale(0.95) translateY(10px)";
+      panel.style.transform = "translateY(20px) scale(0.95)";
       overlay.style.opacity = "0";
       
       setTimeout(() => {
         panel.style.display = "none";
         overlay.style.display = "none";
-        trigger.style.transform = "scale(1)";
+        trigger.style.transform = "scale(1) rotate(0deg)";
         trigger.style.opacity = "1";
         trigger.focus();
-      }, 300);
+      }, 400);
     }
     
-    // Handle specific prompt clicks
     const promptContainer = panel.querySelector('.suggested-prompts');
     if (promptContainer) {
       promptContainer.addEventListener('click', function(e) {
@@ -164,24 +150,17 @@
           const promptText = chip.innerText;
           const textArea = panel.querySelector('textarea, input[type="text"]');
           if (textArea) {
-             // Set value
              textArea.value = promptText;
-             // Trigger input event for Shiny binding
              textArea.dispatchEvent(new Event('input', { bubbles: true }));
              textArea.focus();
              
-             // Optional: visual feedback
              chip.style.transform = 'scale(0.95)';
              setTimeout(() => chip.style.transform = '', 150);
-             
-             // Optional: auto-submit if desired?
-             // Not enforcing auto-submit to give user chance to edit
           }
         }
       });
     }
   }
 
-  // Export to global scope so we can call it from R
   window.initFloatingChat = initFloatingChat;
 })();

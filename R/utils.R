@@ -39,7 +39,11 @@ format_dimension <- function(dim) {
 #' @param bg_color CSS color for background (default: "#fff")
 #' @return A shiny tags$div or NULL if no prompts
 #' @keywords internal
-chat_prompts_ui <- function(prompts, border_color = "#e5e5e5", bg_color = "#fff") {
+chat_prompts_ui <- function(
+  prompts,
+  border_color = "#e5e5e5",
+  bg_color = "#fff"
+) {
   if (is.null(prompts) || length(prompts) == 0) {
     return(NULL)
   }
@@ -52,8 +56,12 @@ chat_prompts_ui <- function(prompts, border_color = "#e5e5e5", bg_color = "#fff"
       "white-space: nowrap; ",
       "display: flex; ",
       "gap: 0.5rem; ",
-      "border-top: 1px solid ", border_color, "; ",
-      "background: ", bg_color, ";"
+      "border-top: 1px solid ",
+      border_color,
+      "; ",
+      "background: ",
+      bg_color,
+      ";"
     ),
     lapply(prompts, function(prompt) {
       shiny::tags$button(
@@ -73,7 +81,8 @@ chat_prompts_ui <- function(prompts, border_color = "#e5e5e5", bg_color = "#fff"
 #' @return A shiny tags$script element
 #' @keywords internal
 chat_prompts_js <- function(container_id) {
-  shiny::tags$script(shiny::HTML(sprintf('
+  shiny::tags$script(shiny::HTML(sprintf(
+    '
     (function() {
       const containerId = "%s";
 
@@ -104,7 +113,9 @@ chat_prompts_js <- function(container_id) {
         initPromptChips();
       }
     })();
-  ', container_id)))
+  ',
+    container_id
+  )))
 }
 
 #' Shared CSS for chat components
