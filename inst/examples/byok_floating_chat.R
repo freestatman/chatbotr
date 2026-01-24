@@ -124,12 +124,14 @@ ui <- page_fluid(
     )
   ),
 
-  tags$script(HTML("
+  tags$script(HTML(
+    "
     Shiny.addCustomMessageHandler('closeSettingsModal', function(msg) {
       var modal = bootstrap.Modal.getInstance(document.getElementById('settingsModal'));
       if (modal) modal.hide();
     });
-  "))
+  "
+  ))
 )
 
 server <- function(input, output, session) {
