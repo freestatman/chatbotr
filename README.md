@@ -18,9 +18,8 @@ pak::pak("freestatman/chatbotr")
 ```
 
 > [!IMPORTANT]
-> Requires `ellmer >= 0.4.0.9000`. If not, this
-> [unreleased PR](https://github.com/tidyverse/ellmer/pull/877) with the GitHub Copilot API
-> that will quietly ruin your day. `pak` also resolves the `shinychat` remote
+> Requires `ellmer >= 0.4.0.9000`, to use GitHub API as model provider: [unreleased PR](https://github.com/tidyverse/ellmer/pull/877)
+> `pak` also resolves the `shinychat` remote
 > (`posit-dev/shinychat`) so you don't have to think about it.
 
 ## Quick start
@@ -46,7 +45,7 @@ Chat bubble, bottom-right corner. Click, talk, close. Dashboard unharmed.
 | Floating bubble | `floating_chat_ui()` | `floating_chat_server()` |
 | Slide-out panel | `offcanvas_chat_ui()` | `offcanvas_chat_server()` |
 
-Both accept any `ellmer` client. GitHub Copilot, OpenAI, Anthropic, Ollama — dealer's choice.
+Both accept any `ellmer` client. GitHub Copilot, OpenAI, Anthropic, Gemini — dealer's choice.
 
 ## BYOK
 
