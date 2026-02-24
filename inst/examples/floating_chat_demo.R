@@ -68,6 +68,7 @@ server <- function(input, output, session) {
   floating_chat_server(
     id = "chat",
     client = ellmer::chat_github(
+      model = "gpt-5-mini",
       system_prompt = "You are a helpful assistant. Be concise."
     )
   )
