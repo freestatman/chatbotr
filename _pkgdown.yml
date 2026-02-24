@@ -1,0 +1,53 @@
+url: https://freestatman.github.io/chatbotr/
+template:
+  bootstrap: 5
+  bslib:
+    primary: "#6f42c1" # Delightful purple
+    base_font: {google: "Inter"}
+    heading_font: {google: "Outfit"}
+  development:
+    mode: auto
+
+navbar:
+  structure:
+    left:  [intro, reference, articles, news]
+    right: [search, github]
+  components:
+    github:
+      icon: fab fa-github
+      href: https://github.com/freestatman/chatbotr
+
+reference:
+  - title: Floating Chat
+    desc: UI and Server for the floating bubble interface
+    contents:
+      - floating_chat_ui
+      - floating_chat_server
+  - title: Offcanvas Chat
+    desc: UI and Server for the slide-out panel interface
+    contents:
+      - offcanvas_chat_ui
+      - offcanvas_chat_server
+  - title: API Configuration
+    desc: Runtime settings for LLM providers
+    contents:
+      - api_settings_ui
+      - api_settings_server
+  - title: Customization
+    desc: Low-level UI and CSS components
+    contents:
+      - chat_prompts_ui
+      - chat_prompts_js
+      - chat_shared_css
+  - title: Utilities
+    desc: Internal helpers and shared components
+    contents:
+      - has_concept("utils")
+      - format_dimension
+      - detect_env_key
+      - get_provider_env_var
+
+articles:
+  - title: Get Started
+    contents:
+      - get-started
