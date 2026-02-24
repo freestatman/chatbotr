@@ -1,78 +1,45 @@
-# Default app
-APP=floating_chat_demo.R
+.PHONY: document test check install load clean format help run run-byok run-offcanvas dev coverage site e2e
 
-# Package development targets
-.PHONY: install load test check document format clean coverage
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-install:
-	R CMD INSTALL --no-multiarch --with-keep.source .
+dev: format document load ## Fast dev loop: format, document, and load_all
 
-load:
-	Rscript -e "pkgload::load_all()"
-
-test:
-	Rscript -e "devtools::test()"
-
-check:
-	R CMD check --no-multiarch --as-cran .
-
-document:
+document: ## Generate documentation (roxygen2)
 	Rscript -e "devtools::document()"
 
-format:
+test: ## Run unit tests
+	Rscript -e "devtools::test()"
+
+coverage: ## Check unit test coverage
+	Rscript -e "covr::report()"
+
+check: ## Run CRAN-style package checks
+	R CMD check --no-multiarch --as-cran .
+
+install: ## Install package locally
+	R CMD INSTALL --no-multiarch --with-keep.source .
+
+load: ## Load all functions (pkgload)
+	Rscript -e "pkgload::load_all()"
+
+format: ## Format R code
 	air format .
 
-coverage:
-	Rscript -e "covr::package_coverage()" 
+site: ## Build package documentation site (pkgdown)
+	Rscript -e "pkgdown::build_site()"
 
-clean:
-	rm -rf src/*.o src/*.so man/*.Rd
+e2e: ## Run Playwright E2E tests (requires app running at localhost:3838)
+	cd e2e && npx playwright test
 
-# Demo and example targets (all dependent on install)
-.PHONY: run offcanvas floating byok byok-offcanvas btw-floating
+clean: ## Remove build artifacts
+	rm -rf man/*.Rd src/*.o src/*.so e2e/test-results e2e/playwright-report
 
-run: install
-	Rscript inst/examples/$(APP)
-
-offcanvas: install
-	Rscript inst/examples/offcanvas_chat_demo.R
-
-floating: install
+run: install ## Run default demo
 	Rscript inst/examples/floating_chat_demo.R
 
-byok: install
+run-byok: install ## Run BYOK example
 	Rscript inst/examples/byok_floating_chat.R
 
-byok-offcanvas: install
-	Rscript inst/examples/byok_offcanvas_chat.R
-
-btw-floating: install
-	Rscript inst/examples/btw_floating_chat.R
-
-# Help
-.PHONY: help
-help:
-	@echo "=== R Package Development ==="
-	@echo "  install    - Install package from source"
-	@echo "  load       - Load package into R session (pkgload)"
-	@echo "  test       - Run unit tests (testthat)"
-	@echo "  check      - Run R CMD check (CRAN compliance)"
-	@echo "  document   - Generate roxygen2 documentation"
-	@echo "  format     - Format code with air package (required)"
-	@echo "  coverage   - Generate test coverage report"
-	@echo "  clean      - Remove build artifacts"
-	@echo ""
-	@echo "=== Demo Applications ==="
-	@echo "  run            - Run default app (floating_chat_demo.R)"
-	@echo "  offcanvas      - Run offcanvas_chat_demo.R"
-	@echo "  floating       - Run floating_chat_demo.R"
-	@echo "  byok           - Run byok_floating_chat.R"
-	@echo "  byok-offcanvas - Run byok_offcanvas_chat.R"
-	@echo "  btw-floating   - Run btw_floating_chat.R (R assistant with btw tools)"
-	@echo ""
-	@echo "=== Typical Workflow ==="
-	@echo "  make load      - Load package for interactive development"
-	@echo "  make format    - Format code (air)"
-	@echo "  make document  - Generate documentation"
-	@echo "  make test      - Run tests"
-	@echo "  make check     - Final verification before commit"
+run-offcanvas: install ## Run offcanvas example
+	Rscript inst/examples/offcanvas_chat_demo.R
