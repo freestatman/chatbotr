@@ -3,12 +3,12 @@
 # BYOK Offcanvas Chat Demo
 # Demonstrates "Bring Your Own Key" with offcanvas interface
 
+pkgload::load_all()
 library(shiny)
 library(bslib)
 library(shinychat)
 library(ellmer)
 library(chatbotr)
-pkgload::load_all()
 
 ui <- page_fluid(
   theme = bs_theme(version = 5),

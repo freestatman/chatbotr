@@ -3,12 +3,12 @@
 # BYOK Floating Chat Demo
 # Demonstrates "Bring Your Own Key" with floating chat interface
 
+pkgload::load_all()
 library(shiny)
 library(bslib)
 library(shinychat)
 library(ellmer)
 library(chatbotr)
-pkgload::load_all()
 
 ui <- page_fluid(
   theme = bs_theme(version = 5),
@@ -45,11 +45,10 @@ ui <- page_fluid(
         h5("Supported Providers", style = "font-weight: 500;"),
         tags$ul(
           class = "mb-0",
-          tags$li(tags$strong("GitHub Models"), " - Use GitHub PAT"),
-          tags$li(tags$strong("OpenAI"), " - GPT-4, GPT-3.5"),
-          tags$li(tags$strong("Anthropic"), " - Claude models"),
-          tags$li(tags$strong("Google"), " - Gemini models"),
-          tags$li(tags$strong("Ollama"), " - Local models")
+          tags$li(tags$strong("GitHub Models"), " - Use GitHub token"),
+          tags$li(tags$strong("OpenAI")),
+          tags$li(tags$strong("Anthropic")),
+          tags$li(tags$strong("Google"))
         )
       )
     )
