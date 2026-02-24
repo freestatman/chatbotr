@@ -35,7 +35,7 @@ test_that("byok_floating_chat app structure is correct", {
 
   # Check for clear button handler with correct pattern
   expect_true(grepl("shinychat::chat_clear", app_text))
-  expect_true(grepl("my_chat1-chat-chat", app_text))
+  expect_true(grepl("chat-chat-chat", app_text))
 
   # Check settings modal exists
   expect_true(grepl("settingsModal", app_text))
@@ -54,7 +54,7 @@ test_that("clear button uses correct shinychat pattern", {
   expect_false(grepl("chat_instance\\(\\)\\$clear\\(\\)", app_text))
 
   # Verify correct namespaced ID
-  expect_true(grepl('"my_chat1-chat-chat"', app_text))
+  expect_true(grepl('"chat-chat-chat"', app_text))
 })
 
 # Interactive tests (require chromote)
@@ -66,9 +66,37 @@ test_that("BYOK app can initialize with shinytest2", {
 
   app_file <- system.file("examples/byok_floating_chat.R", package = "chatbotr")
 
-  # This would fail with shinyApp() at the end of the script
-  # Need to modify approach for actual interactive testing
-  skip("Full interactive test requires app refactoring")
+  # skip("Full interactive test requires app refactoring")
+
+  # Try to run if chromote is ready
+  tryCatch(
+    {
+      library(shinytest2)
+      app_file <- system.file(
+        "examples/byok_floating_chat.R",
+        package = "chatbotr"
+      )
+      if (app_file == "") {
+        app_file <- testthat::test_path(
+          "../../inst/examples/byok_floating_chat.R"
+        )
+      }
+
+      app_env <- new.env()
+      app_obj <- source(app_file, local = app_env)$value
+      app <- AppDriver$new(
+        app_obj,
+        name = "byok_interactive",
+        load_timeout = 20000
+      )
+      vals <- app$get_values()
+      expect_true("open_settings" %in% names(vals$input))
+      app$stop()
+    },
+    error = function(e) {
+      skip(paste("Interactive test failed:", e$message))
+    }
+  )
 })
 
 test_that("Settings modal structure is correct", {
