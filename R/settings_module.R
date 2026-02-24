@@ -106,7 +106,7 @@ api_settings_ui <- function(
       color: #334155;
       margin-bottom: 0.5rem;
     }
-    .api-settings-container .form-control, 
+    .api-settings-container .form-control,
     .api-settings-container .form-select {
       border-radius: var(--chat-radius-md, 0.75rem);
       border: 1px solid #e2e8f0;
@@ -114,7 +114,7 @@ api_settings_ui <- function(
       font-size: 0.875rem;
       transition: all 0.2s ease;
     }
-    .api-settings-container .form-control:focus, 
+    .api-settings-container .form-control:focus,
     .api-settings-container .form-select:focus {
       border-color: #6366f1;
       box-shadow: 0 0 0 3px rgba(99, 101, 241, 0.1);
@@ -157,14 +157,12 @@ api_settings_ui <- function(
         "GitHub Models" = "github",
         "OpenAI" = "openai",
         "Anthropic (Claude)" = "anthropic",
-        "Google Gemini" = "google",
-        "Azure OpenAI" = "azure",
-        "Ollama (Local)" = "ollama"
+        "Google Gemini" = "google"
       ),
       selected = default_provider
     ),
     shiny::conditionalPanel(
-      condition = sprintf("input['%s'] != 'ollama'", ns("provider")),
+      condition = "true",
       ns = ns,
       shiny::passwordInput(
         inputId = ns("api_key"),
@@ -178,25 +176,6 @@ api_settings_ui <- function(
         placeholder = "Enter your API key or token"
       ),
       shiny::uiOutput(ns("env_key_hint"))
-    ),
-    shiny::conditionalPanel(
-      condition = sprintf("input['%s'] == 'azure'", ns("provider")),
-      ns = ns,
-      shiny::textInput(
-        inputId = ns("azure_endpoint"),
-        label = "Azure Endpoint",
-        placeholder = "https://your-resource.openai.azure.com"
-      )
-    ),
-    shiny::conditionalPanel(
-      condition = sprintf("input['%s'] == 'ollama'", ns("provider")),
-      ns = ns,
-      shiny::textInput(
-        inputId = ns("ollama_host"),
-        label = "Ollama Host",
-        value = "http://localhost:11434",
-        placeholder = "http://localhost:11434"
-      )
     ),
     shiny::uiOutput(ns("model_selector")),
     shiny::tags$div(
@@ -252,7 +231,7 @@ api_settings_ui <- function(
     shiny::uiOutput(ns("connection_status"))
   )
 
-  if (inline) {
+  res <- if (inline) {
     shiny::tags$div(
       class = "api-settings-inline p-4 border rounded-3 bg-white shadow-sm",
       settings_content
@@ -260,6 +239,8 @@ api_settings_ui <- function(
   } else {
     settings_content
   }
+
+  shiny::tagList(res)
 }
 
 #' API Settings Server Module
@@ -339,10 +320,6 @@ api_settings_server <- function(id, default_system_prompt = NULL) {
                 Sys.setenv(GOOGLE_API_KEY = api_key)
                 ellmer::models_google_gemini()
               },
-              "ollama" = {
-                host <- input$ollama_host %||% "http://localhost:11434"
-                ellmer::models_ollama(host = host)
-              },
               NULL
             )
 
@@ -375,52 +352,26 @@ api_settings_server <- function(id, default_system_prompt = NULL) {
       switch(
         provider,
         "github" = list(
-          "GPT-4o" = "gpt-4o",
-          "GPT-4o Mini" = "gpt-4o-mini",
-          "GPT-4 Turbo" = "gpt-4-turbo",
-          "o1 Preview" = "o1-preview",
-          "o1 Mini" = "o1-mini",
-          "Phi-3.5" = "phi-3.5",
-          "Llama 3.1 (405B)" = "llama-3.1-405b",
-          "Llama 3.1 (70B)" = "llama-3.1-70b",
-          "Mistral Large" = "mistral-large"
+          "GPT-5" = "gpt-5",
+          "GPT-5 Mini" = "gpt-5-mini",
+          "o4 Mini" = "o4-mini",
+          "o3" = "o3"
         ),
         "openai" = list(
-          "GPT-4o" = "gpt-4o",
-          "GPT-4o Mini" = "gpt-4o-mini",
-          "GPT-4 Turbo" = "gpt-4-turbo",
-          "GPT-4" = "gpt-4",
-          "GPT-3.5 Turbo" = "gpt-3.5-turbo",
-          "o1 Preview" = "o1-preview",
-          "o1 Mini" = "o1-mini"
+          "GPT-5" = "gpt-5",
+          "GPT-5 Mini" = "gpt-5-mini",
+          "o4 Mini" = "o4-mini",
+          "o3" = "o3"
         ),
         "anthropic" = list(
-          "Claude 3.5 Sonnet" = "claude-3-5-sonnet-20241022",
-          "Claude 3 Opus" = "claude-3-opus-20240229",
-          "Claude 3 Sonnet" = "claude-3-sonnet-20240229",
-          "Claude 3 Haiku" = "claude-3-haiku-20240307"
+          "Claude Sonnet 4.6" = "claude-sonnet-4-6",
+          "Claude Opus 4.5" = "claude-opus-4-5",
+          "Claude Haiku 4.5" = "claude-haiku-4-5",
+          "Claude Sonnet 4.5" = "claude-sonnet-4-5"
         ),
         "google" = list(
-          "Gemini 1.5 Pro" = "gemini-1.5-pro",
-          "Gemini 1.5 Flash" = "gemini-1.5-flash",
-          "Gemini 1.0 Pro" = "gemini-1.0-pro"
-        ),
-        "azure" = list(
-          "GPT-4o" = "gpt-4o",
-          "GPT-4o Mini" = "gpt-4o-mini",
-          "GPT-4 Turbo" = "gpt-4-turbo",
-          "GPT-4" = "gpt-4",
-          "GPT-3.5 Turbo" = "gpt-3.5-turbo"
-        ),
-        "ollama" = list(
-          "Llama 3.2" = "llama3.2",
-          "Llama 3.1" = "llama3.1",
-          "Llama 3" = "llama3",
-          "Mistral" = "mistral",
-          "Mixtral" = "mixtral",
-          "Phi-3" = "phi3",
-          "Gemma 2" = "gemma2",
-          "CodeLlama" = "codellama"
+          "Gemini 3.0 Flash" = "gemini-3.0-flash",
+          "Gemini 3.0 Pro" = "gemini-3.0-pro"
         ),
         list("Default Model" = "default")
       )
@@ -483,8 +434,8 @@ api_settings_server <- function(id, default_system_prompt = NULL) {
       ns <- session$ns
       provider <- input$provider
 
-      # Skip for ollama (no key needed) and azure (not supported)
-      if (provider %in% c("ollama", "azure")) {
+      # Skip for azure/ollama (not supported)
+      if (FALSE) {
         return(NULL)
       }
 
@@ -586,8 +537,8 @@ api_settings_server <- function(id, default_system_prompt = NULL) {
     shiny::observe({
       provider <- input$provider
 
-      # Skip for ollama (no key needed) and azure (not supported)
-      if (provider %in% c("ollama", "azure")) {
+      # Skip
+      if (FALSE) {
         return()
       }
 
@@ -693,32 +644,6 @@ api_settings_server <- function(id, default_system_prompt = NULL) {
               }
               do.call(ellmer::chat_google_gemini, common_args)
             },
-            "azure" = {
-              if (!is.null(key) && nchar(key) > 0) {
-                old_key <- Sys.getenv("AZURE_OPENAI_API_KEY")
-                on.exit(Sys.setenv(AZURE_OPENAI_API_KEY = old_key))
-                Sys.setenv(AZURE_OPENAI_API_KEY = key)
-              }
-              if (
-                !is.null(input$azure_endpoint) &&
-                  nchar(input$azure_endpoint) > 0
-              ) {
-                old_endpoint <- Sys.getenv("AZURE_OPENAI_ENDPOINT")
-                on.exit(
-                  Sys.setenv(AZURE_OPENAI_ENDPOINT = old_endpoint),
-                  add = TRUE
-                )
-                Sys.setenv(AZURE_OPENAI_ENDPOINT = input$azure_endpoint)
-              }
-              do.call(ellmer::chat_azure_openai, common_args)
-            },
-            "ollama" = {
-              ollama_args <- common_args
-              if (!is.null(input$ollama_host) && nchar(input$ollama_host) > 0) {
-                ollama_args$host <- input$ollama_host
-              }
-              do.call(ellmer::chat_ollama, ollama_args)
-            },
             stop("Unknown provider: ", provider)
           )
 
@@ -734,20 +659,10 @@ api_settings_server <- function(id, default_system_prompt = NULL) {
     # Save settings
     shiny::observeEvent(input$save_settings, {
       # Validate inputs
-      if (input$provider != "ollama") {
+      if (TRUE) {
         if (is.null(input$api_key) || nchar(input$api_key) == 0) {
           shiny::showNotification(
             "Please enter an API key",
-            type = "error"
-          )
-          return()
-        }
-      }
-
-      if (input$provider == "azure") {
-        if (is.null(input$azure_endpoint) || nchar(input$azure_endpoint) == 0) {
-          shiny::showNotification(
-            "Please enter Azure endpoint",
             type = "error"
           )
           return()
@@ -781,7 +696,7 @@ api_settings_server <- function(id, default_system_prompt = NULL) {
 
     # Test connection
     shiny::observeEvent(input$test_connection, {
-      if (input$provider != "ollama") {
+      if (TRUE) {
         if (is.null(input$api_key) || nchar(input$api_key) == 0) {
           config$test_status <- list(
             success = FALSE,
