@@ -26,7 +26,8 @@ Suggests:
     shinytest2,
     knitr,
     rmarkdown,
-    mockery
+    mockery,
+    pkgdown
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 URL: https://github.com/freestatman/chatbotr
