@@ -1,15 +1,24 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
-<url><loc>/404.html</loc></url>
-<url><loc>/LICENSE-text.html</loc></url>
-<url><loc>/authors.html</loc></url>
-<url><loc>/copilot-instructions.html</loc></url>
-<url><loc>/index.html</loc></url>
-<url><loc>/reference/api_settings_server.html</loc></url>
-<url><loc>/reference/api_settings_ui.html</loc></url>
-<url><loc>/reference/floating_chat_server.html</loc></url>
-<url><loc>/reference/floating_chat_ui.html</loc></url>
-<url><loc>/reference/index.html</loc></url>
-<url><loc>/reference/offcanvas_chat_server.html</loc></url>
-<url><loc>/reference/offcanvas_chat_ui.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/404.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/LICENSE-text.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/articles/get-started.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/articles/index.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/authors.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/index.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/reference/api_settings_server.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/reference/api_settings_ui.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/reference/chat_prompts_js.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/reference/chat_prompts_ui.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/reference/chat_shared_css.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/reference/detect_env_key.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/reference/floating_chat_server.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/reference/floating_chat_ui.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/reference/format_dimension.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/reference/get_provider_env_var.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/reference/grapes-or-or-grapes.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/reference/index.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/reference/offcanvas_chat_server.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/reference/offcanvas_chat_ui.html</loc></url>
+<url><loc>https://freestatman.github.io/chatbotr/reference/utils.html</loc></url>
 </urlset>
 
