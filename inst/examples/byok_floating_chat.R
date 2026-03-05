@@ -3,12 +3,12 @@
 # BYOK Floating Chat Demo
 # Demonstrates "Bring Your Own Key" with floating chat interface
 
-pkgload::load_all()
 library(shiny)
 library(bslib)
 library(shinychat)
 library(ellmer)
-library(chatbotr)
+# library(chatbotr)
+pkgload::load_all()
 
 ui <- page_fluid(
   theme = bs_theme(version = 5),
@@ -17,38 +17,58 @@ ui <- page_fluid(
     class = "container py-5",
     style = "max-width: 800px;",
 
-    h1("BYOK Chat Demo", style = "font-weight: 600;"),
+    h1(
+      "BYOK Chat Demo",
+      style = "font-weight: 700; letter-spacing: -0.02em; color: #0f172a;"
+    ),
     p(
-      class = "text-muted",
-      "Configure your own API key and provider."
+      class = "lead",
+      style = "font-weight: 400; color: #64748b;",
+      "Configure your own API key and provider for a bespoke AI experience."
     ),
 
     div(
-      class = "card mt-4",
+      class = "mt-5",
+      style = "display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;",
       div(
-        class = "card-body",
-        h5("Instructions", style = "font-weight: 500;"),
+        class = "p-4",
+        style = "background: #f8fafc; border-radius: 1.25rem; border: 1px solid #e2e8f0;",
+        h5("Instructions", style = "font-weight: 600; margin-bottom: 1rem;"),
         tags$ol(
           class = "mb-0",
+          style = "color: #475569; line-height: 1.6;",
           tags$li("Click the gear icon in the chat header"),
           tags$li("Select your LLM provider"),
           tags$li("Enter your API key"),
           tags$li("Choose a model and click Save")
         )
-      )
-    ),
-
-    div(
-      class = "card mt-3",
+      ),
       div(
-        class = "card-body",
-        h5("Supported Providers", style = "font-weight: 500;"),
+        class = "p-4",
+        style = "background: #f8fafc; border-radius: 1.25rem; border: 1px solid #e2e8f0;",
+        h5(
+          "Supported Providers",
+          style = "font-weight: 600; margin-bottom: 1rem;"
+        ),
         tags$ul(
           class = "mb-0",
-          tags$li(tags$strong("GitHub Models"), " - Use GitHub token"),
-          tags$li(tags$strong("OpenAI")),
-          tags$li(tags$strong("Anthropic")),
-          tags$li(tags$strong("Google"))
+          style = "list-style: none; padding-left: 0; color: #475569; line-height: 1.6;",
+          tags$li(
+            icon("check", class = "text-primary me-2"),
+            tags$strong("GitHub Models")
+          ),
+          tags$li(
+            icon("check", class = "text-primary me-2"),
+            tags$strong("OpenAI")
+          ),
+          tags$li(
+            icon("check", class = "text-primary me-2"),
+            tags$strong("Anthropic")
+          ),
+          tags$li(
+            icon("check", class = "text-primary me-2"),
+            tags$strong("Google Gemini")
+          )
         )
       )
     )
@@ -97,13 +117,14 @@ ui <- page_fluid(
       class = "modal-dialog modal-dialog-centered",
       tags$div(
         class = "modal-content",
+        style = "border-radius: 1.5rem; border: none; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-height: calc(100vh - 3.5rem); display: flex; flex-direction: column;",
         tags$div(
           class = "modal-header",
-          style = "border-bottom: 1px solid #e5e5e5;",
+          style = "border-bottom: 1px solid #f1f5f9; padding: 1.25rem 1.5rem; flex-shrink: 0;",
           tags$h5(
             class = "modal-title",
-            style = "font-weight: 500;",
-            "API Settings"
+            style = "font-weight: 600; letter-spacing: -0.01em;",
+            "API Configuration"
           ),
           tags$button(
             type = "button",
@@ -113,6 +134,7 @@ ui <- page_fluid(
         ),
         tags$div(
           class = "modal-body",
+          style = "padding: 1.5rem; overflow-y: auto;",
           api_settings_ui(
             id = "settings",
             default_provider = "github",

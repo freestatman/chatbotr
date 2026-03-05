@@ -17,24 +17,27 @@ ui <- page_fluid(
     class = "container py-5",
     style = "max-width: 800px;",
 
-    h1("BYOK Offcanvas Demo", style = "font-weight: 600;"),
+    h1("BYOK Offcanvas Demo", style = "font-weight: 700; letter-spacing: -0.02em;"),
     p(
-      class = "text-muted",
+      class = "lead",
+      style = "color: #64748b;",
       "Configure your API settings, then open the chat panel."
     ),
 
     # Settings Card
     div(
-      class = "card mt-4",
+      class = "mt-5",
+      style = "background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-radius: 1.5rem; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);",
       div(
-        class = "card-header d-flex justify-content-between align-items-center",
-        style = "background: #171717; color: #fff;",
-        tags$span("API Configuration", style = "font-weight: 500;"),
+        class = "d-flex justify-content-between align-items-center p-4",
+        style = "border-bottom: 1px solid #f1f5f9;",
+        tags$span("API Configuration", style = "font-weight: 600; font-size: 1.1rem;"),
         actionButton(
           inputId = "toggle_settings",
           label = NULL,
           icon = icon("chevron-down"),
           class = "btn btn-sm btn-light",
+          style = "border-radius: 0.5rem;",
           onclick = "document.getElementById('settingsContent').classList.toggle('show')"
         )
       ),
@@ -42,7 +45,7 @@ ui <- page_fluid(
         id = "settingsContent",
         class = "collapse show",
         div(
-          class = "card-body",
+          class = "p-4",
           api_settings_ui(
             id = "settings",
             default_provider = "github",

@@ -7,7 +7,7 @@ library(shiny)
 library(bslib)
 library(shinychat)
 library(ellmer)
-library(chatbotr)
+# library(chatbotr)
 pkgload::load_all()
 
 ui <- page_fluid(

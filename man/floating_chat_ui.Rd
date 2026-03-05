@@ -17,7 +17,6 @@ floating_chat_ui(
   welcome_message = NULL,
   suggested_prompts = NULL,
   theme = c("light", "dark"),
-  enable_minimize = TRUE,
   enable_maximize = TRUE,
   header_actions = NULL
 )
@@ -48,8 +47,6 @@ If provided, this will be passed to the chat UI function via chat_ui_args.}
 \item{suggested_prompts}{Optional vector of suggested prompt strings to display as chips.}
 
 \item{theme}{Color theme: "light" or "dark" (default: "light")}
-
-\item{enable_minimize}{Enable minimize functionality (default: TRUE)}
 
 \item{enable_maximize}{Enable maximize functionality (default: TRUE)}
 

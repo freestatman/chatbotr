@@ -4,7 +4,7 @@
 \alias{chat_prompts_ui}
 \title{Generate suggested prompts UI}
 \usage{
-chat_prompts_ui(prompts, border_color = "#e5e5e5", bg_color = "#fff")
+chat_prompts_ui(prompts, border_color = NULL, bg_color = NULL)
 }
 \arguments{
 \item{prompts}{Character vector of prompt strings}

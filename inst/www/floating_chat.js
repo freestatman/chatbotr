@@ -47,29 +47,10 @@
       });
     }
     
-    const minimizeBtn = panel.querySelector(".floating-chat-minimize");
-    if (minimizeBtn) {
-      minimizeBtn.addEventListener("click", function() {
-        const isMinimized = panel.getAttribute("data-minimized") === "true";
-        if (isMinimized) {
-          panel.style.height = config.panelHeight;
-          panel.setAttribute("data-minimized", "false");
-          minimizeBtn.innerHTML = '<i class="fa fa-minus"></i>';
-          minimizeBtn.setAttribute("aria-label", "Minimize chat");
-        } else {
-          panel.style.height = "4.5rem";
-          panel.setAttribute("data-minimized", "true");
-          minimizeBtn.innerHTML = '<i class="fa fa-chevron-up"></i>';
-          minimizeBtn.setAttribute("aria-label", "Restore chat");
-        }
-      });
-    }
-    
     const maximizeBtn = panel.querySelector(".floating-chat-maximize");
     if (maximizeBtn) {
       maximizeBtn.addEventListener("click", function() {
         const isMaximized = panel.getAttribute("data-maximized") === "true";
-        const isMinimized = panel.getAttribute("data-minimized") === "true";
         
         if (isMaximized) {
           const originalWidth = panel.getAttribute("data-original-width");
@@ -92,16 +73,6 @@
           maximizeBtn.innerHTML = '<i class="fa fa-expand-arrows-alt"></i>';
           maximizeBtn.setAttribute("aria-label", "Maximize chat");
         } else {
-          if (isMinimized) {
-            const originalHeight = panel.getAttribute("data-original-height");
-            panel.style.height = originalHeight;
-            panel.setAttribute("data-minimized", "false");
-            const minBtn = panel.querySelector(".floating-chat-minimize");
-            if (minBtn) {
-              minBtn.innerHTML = '<i class="fa fa-minus"></i>';
-              minBtn.setAttribute("aria-label", "Minimize chat");
-            }
-          }
           
           panel.style.top = "0";
           panel.style.bottom = "0";

@@ -41,28 +41,28 @@ format_dimension <- function(dim) {
 #' @keywords internal
 chat_prompts_ui <- function(
   prompts,
-  border_color = "#e5e5e5",
-  bg_color = "#fff"
+  border_color = NULL,
+  bg_color = NULL
 ) {
   if (is.null(prompts) || length(prompts) == 0) {
     return(NULL)
   }
 
+  # Theme-specific variables if provided (for backward compatibility or specific overrides)
+  style <- if (!is.null(border_color) || !is.null(bg_color)) {
+    paste0(
+      if (!is.null(border_color)) {
+        paste0("border-top-color: ", border_color, "; ")
+      },
+      if (!is.null(bg_color)) paste0("background-color: ", bg_color, "; ")
+    )
+  } else {
+    NULL
+  }
+
   shiny::tags$div(
     class = "suggested-prompts",
-    style = paste0(
-      "padding: 0.5rem 0.75rem; ",
-      "overflow-x: auto; ",
-      "white-space: nowrap; ",
-      "display: flex; ",
-      "gap: 0.5rem; ",
-      "border-top: 1px solid ",
-      border_color,
-      "; ",
-      "background: ",
-      bg_color,
-      ";"
-    ),
+    style = style,
     lapply(prompts, function(prompt) {
       shiny::tags$button(
         class = "suggested-prompt-chip",
@@ -120,78 +120,8 @@ chat_prompts_js <- function(container_id) {
 
 #' Shared CSS for chat components
 #'
-#' Returns the CSS styles shared between floating and offcanvas chat modules.
-#'
-#' @param include_dark_theme Whether to include dark theme variants (default: FALSE)
-#' @return A shiny tags$style element
 #' @keywords internal
 chat_shared_css <- function(include_dark_theme = FALSE) {
-  base_css <- "
-    .btn-ghost {
-      background: transparent;
-      border: none;
-      color: #737373;
-      width: 2rem;
-      height: 2rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .btn-ghost:hover {
-      background: rgba(0,0,0,0.05);
-      color: #171717;
-    }
-
-    .suggested-prompt-chip {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.375rem 0.75rem;
-      border-radius: 9999px;
-      border: 1px solid #e5e5e5;
-      background: #fafafa;
-      color: #525252;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      white-space: nowrap;
-    }
-    .suggested-prompt-chip:hover {
-      background: #f5f5f5;
-      border-color: #d4d4d4;
-      color: #171717;
-    }
-
-    .suggested-prompts {
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-    .suggested-prompts::-webkit-scrollbar {
-      display: none;
-    }
-  "
-
-  dark_css <- if (include_dark_theme) {
-    "
-    .floating-chat-dark .btn-ghost:hover {
-      background: rgba(255,255,255,0.1);
-      color: #fafafa;
-    }
-    .floating-chat-dark .suggested-prompt-chip {
-      border-color: #3f3f46;
-      background: #27272a;
-      color: #a1a1aa;
-    }
-    .floating-chat-dark .suggested-prompt-chip:hover {
-      background: #3f3f46;
-      color: #fafafa;
-    }
-    "
-  } else {
-    ""
-  }
-
-  shiny::tags$style(shiny::HTML(paste0(base_css, dark_css)))
+  NULL
 }
+

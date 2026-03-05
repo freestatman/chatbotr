@@ -81,12 +81,10 @@ offcanvas_chat_ui <- function(
 
   # Offcanvas header
   header <- shiny::tags$div(
-    class = "offcanvas-header",
-    style = "border-bottom: 1px solid #e5e5e5;",
+    class = "offcanvas-header chatbotr-header",
     shiny::tags$h5(
       class = "offcanvas-title",
       id = label_id,
-      style = "font-weight: 500; font-size: 0.9rem;",
       title
     ),
     shiny::tags$div(
@@ -111,13 +109,13 @@ offcanvas_chat_ui <- function(
   prompts_ui <- chat_prompts_ui(prompts = suggested_prompts)
 
   body <- shiny::tags$div(
-    class = "offcanvas-body p-0 d-flex flex-column",
+    class = "offcanvas-body chatbotr-body",
     chat_ui,
     prompts_ui
   )
 
   # Offcanvas container
-  oc_class <- paste("offcanvas", paste0("offcanvas-", placement))
+  oc_class <- paste("offcanvas chatbotr-panel", paste0("offcanvas-", placement))
   oc_style <- if (placement %in% c("start", "end")) {
     paste0("--bs-offcanvas-width:", format_dimension(width), ";")
   } else {
@@ -138,29 +136,20 @@ offcanvas_chat_ui <- function(
   # JS for suggested prompts
   js_code <- chat_prompts_js(canvas_id)
 
-  # Minimal CSS for offcanvas-specific styling
-  offcanvas_specific_css <- shiny::tags$style(shiny::HTML(
-    "
-    .offcanvas-header {
-      padding: 0.875rem 1rem;
-      background: #fff;
-    }
-    .offcanvas-body {
-      background: #fff;
-    }
-  "
-  ))
-
-  shared_css <- chat_shared_css()
-
   shiny::tagList(
-    offcanvas_specific_css,
-    shared_css,
+    htmltools::htmlDependency(
+      name = "chatbotr-core",
+      version = "0.1.0",
+      src = c(file = "www"),
+      package = "chatbotr",
+      stylesheet = "floating_chat.css"
+    ),
     open_btn,
     offcanvas_div,
     js_code
   )
 }
+
 
 #' Offcanvas Chat Server Module
 #'

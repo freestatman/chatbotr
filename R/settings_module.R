@@ -97,52 +97,86 @@ api_settings_ui <- function(
   # Style for settings
   settings_style <- shiny::tags$style(shiny::HTML(
     "
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
     .api-settings-container {
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
     }
     .api-settings-container .form-label {
-      font-weight: 600;
-      font-size: 0.875rem;
-      color: #334155;
-      margin-bottom: 0.5rem;
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.01em;
     }
     .api-settings-container .form-control,
     .api-settings-container .form-select {
-      border-radius: var(--chat-radius-md, 0.75rem);
+      border-radius: 0.8rem;
       border: 1px solid #e2e8f0;
-      padding: 0.625rem 0.875rem;
-      font-size: 0.875rem;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.9rem;
       transition: all 0.2s ease;
+      background-color: #f8fafc;
     }
     .api-settings-container .form-control:focus,
     .api-settings-container .form-select:focus {
-      border-color: #6366f1;
-      box-shadow: 0 0 0 3px rgba(99, 101, 241, 0.1);
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+      background-color: #ffffff;
+      outline: none;
     }
+    .api-settings-container .btn-primary, 
     .api-settings-container .btn-dark {
-      background: #6366f1;
+      background: #0ea5e9;
       border: none;
-      border-radius: var(--chat-radius-md, 0.75rem);
-      padding: 0.625rem 1.25rem;
+      border-radius: 0.8rem;
+      padding: 0.7rem 1.25rem;
       font-weight: 500;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 0.9rem;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
     }
+    .api-settings-container .btn-primary:hover,
     .api-settings-container .btn-dark:hover {
-      background: #4f46e5;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+      background: #0284c7;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
     }
     .api-settings-container .btn-outline-secondary {
-      border-radius: var(--chat-radius-md, 0.75rem);
+      border-radius: 0.8rem;
       border: 1px solid #e2e8f0;
       color: #64748b;
-      padding: 0.625rem 1.25rem;
+      padding: 0.6rem 1.25rem;
       font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
     }
     .api-settings-container .btn-outline-secondary:hover {
-      background: #f8fafc;
+      background: #f1f5f9;
       color: #0f172a;
       border-color: #cbd5e1;
+    }
+    .api-settings-container hr {
+      opacity: 0.1;
+      margin: 1.5rem 0;
+    }
+    .api-settings-container .text-muted {
+      font-size: 0.75rem;
+      opacity: 0.8;
+    }
+    .api-settings-container .alert {
+      border-radius: 0.8rem;
+      border: none;
+      font-size: 0.85rem;
+      padding: 0.8rem 1rem;
+    }
+    .api-settings-inline {
+      background: rgba(255, 255, 255, 0.7) !important;
+      backdrop-filter: blur(12px) saturate(160%);
+      -webkit-backdrop-filter: blur(12px) saturate(160%);
+      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      border-radius: 1.25rem !important;
+      box-shadow: 0 12px 34px -10px rgba(0, 0, 0, 0.08) !important;
     }
   "
   ))
@@ -150,75 +184,87 @@ api_settings_ui <- function(
   settings_content <- shiny::tags$div(
     class = "api-settings-container",
     settings_style,
-    shiny::selectInput(
-      inputId = ns("provider"),
-      label = "LLM Provider",
-      choices = c(
-        "GitHub Models" = "github",
-        "OpenAI" = "openai",
-        "Anthropic (Claude)" = "anthropic",
-        "Google Gemini" = "google"
-      ),
-      selected = default_provider
+    # Section: Connection
+    shiny::tags$div(
+      class = "mb-3",
+      shiny::selectInput(
+        inputId = ns("provider"),
+        label = "LLM Provider",
+        choices = c(
+          "GitHub Models" = "github",
+          "OpenAI" = "openai",
+          "Anthropic (Claude)" = "anthropic",
+          "Google Gemini" = "google"
+        ),
+        selected = default_provider,
+        width = "100%"
+      )
     ),
-    shiny::conditionalPanel(
-      condition = "true",
-      ns = ns,
+    shiny::tags$div(
+      class = "mb-3",
       shiny::passwordInput(
         inputId = ns("api_key"),
         label = shiny::tagList(
           "API Key / Token",
           shiny::tags$small(
             class = "text-muted ms-2",
-            "(securely stored in session)"
+            "(securely stored)"
           )
         ),
-        placeholder = "Enter your API key or token"
+        placeholder = "Enter your API key or token",
+        width = "100%"
       ),
       shiny::uiOutput(ns("env_key_hint"))
     ),
-    shiny::uiOutput(ns("model_selector")),
+    shiny::hr(),
+    # Section: Model
     shiny::tags$div(
-      class = "d-flex align-items-center gap-2 mb-2",
-      shiny::actionButton(
-        inputId = ns("refresh_models"),
-        label = "Refresh",
-        class = "btn btn-sm btn-outline-secondary",
-        icon = shiny::icon("sync"),
-        style = "font-size: 0.8rem; padding: 0.25rem 0.75rem;"
-      ),
-      shiny::uiOutput(ns("models_status"))
+      class = "mb-3",
+      shiny::uiOutput(ns("model_selector")),
+      shiny::tags$div(
+        class = "d-flex align-items-center gap-2 mt-1",
+        shiny::actionButton(
+          inputId = ns("refresh_models"),
+          label = "Refresh Models",
+          class = "btn btn-sm btn-outline-secondary",
+          icon = shiny::icon("sync"),
+          style = "font-size: 0.75rem; padding: 0.25rem 0.6rem;"
+        ),
+        shiny::uiOutput(ns("models_status"))
+      )
     ),
     if (show_advanced) {
       shiny::tagList(
         shiny::hr(),
-        shiny::tags$h6(
-          style = "font-weight: 600; font-size: 0.875rem; color: #1e293b;",
-          "Advanced Settings"
-        ),
-        shiny::sliderInput(
-          inputId = ns("temperature"),
-          label = "Temperature",
-          min = 0,
-          max = 2,
-          value = 0.7,
-          step = 0.1
-        ),
-        shiny::numericInput(
-          inputId = ns("max_tokens"),
-          label = "Max Tokens",
-          value = 1000,
-          min = 1,
-          max = 100000
+        shiny::tags$div(
+          class = "mb-3",
+          shiny::tags$label(class = "form-label", "Advanced Parameters"),
+          shiny::sliderInput(
+            inputId = ns("temperature"),
+            label = "Temperature",
+            min = 0,
+            max = 2,
+            value = 0.7,
+            step = 0.1,
+            width = "100%"
+          ),
+          shiny::numericInput(
+            inputId = ns("max_tokens"),
+            label = "Max Tokens",
+            value = 1000,
+            min = 1,
+            max = 100000,
+            width = "100%"
+          )
         )
       )
     },
     shiny::tags$div(
-      class = "mt-4 d-flex gap-2",
+      class = "mt-4 pt-2 d-flex gap-2",
       shiny::actionButton(
         inputId = ns("save_settings"),
         label = "Save Settings",
-        class = "btn btn-dark w-100",
+        class = "btn btn-primary flex-grow-1",
         icon = shiny::icon("check")
       ),
       shiny::actionButton(
@@ -233,7 +279,7 @@ api_settings_ui <- function(
 
   res <- if (inline) {
     shiny::tags$div(
-      class = "api-settings-inline p-4 border rounded-3 bg-white shadow-sm",
+      class = "api-settings-inline p-4",
       settings_content
     )
   } else {
@@ -430,16 +476,12 @@ api_settings_server <- function(id, default_system_prompt = NULL) {
     })
 
     # Render environment variable hint for API key
-    output$env_key_hint <- shiny::renderUI({
-      ns <- session$ns
-      provider <- input$provider
+      output$env_key_hint <- shiny::renderUI({
+        ns <- session$ns
+        provider <- input$provider
 
-      # Skip for azure/ollama (not supported)
-      if (FALSE) {
-        return(NULL)
-      }
+        env_info <- detect_env_key(provider)
 
-      env_info <- detect_env_key(provider)
 
       if (!is.null(env_info)) {
         shiny::tags$div(
