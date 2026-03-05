@@ -5,7 +5,7 @@ Creates the horizontal scrolling chip container for suggested prompts.
 ## Usage
 
 ``` r
-chat_prompts_ui(prompts, border_color = "#e5e5e5", bg_color = "#fff")
+chat_prompts_ui(prompts, border_color = NULL, bg_color = NULL)
 ```
 
 ## Arguments

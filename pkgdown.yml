@@ -3,7 +3,7 @@ pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   get-started: get-started.html
-last_built: 2026-02-25T04:24Z
+last_built: 2026-03-05T01:06Z
 urls:
   reference: https://freestatman.github.io/chatbotr/reference
   article: https://freestatman.github.io/chatbotr/articles

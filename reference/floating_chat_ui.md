@@ -20,7 +20,6 @@ floating_chat_ui(
   welcome_message = NULL,
   suggested_prompts = NULL,
   theme = c("light", "dark"),
-  enable_minimize = TRUE,
   enable_maximize = TRUE,
   header_actions = NULL
 )
@@ -78,10 +77,6 @@ floating_chat_ui(
 - theme:
 
   Color theme: "light" or "dark" (default: "light")
-
-- enable_minimize:
-
-  Enable minimize functionality (default: TRUE)
 
 - enable_maximize:
 
